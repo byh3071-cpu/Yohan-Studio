@@ -152,7 +152,7 @@ export function ResultPanel({ result }: { result: ScanResult }) {
 
         <div style={section}>
           <h3 style={sectionTitle}>핵심 문제 TOP 3</h3>
-          {result.top3Problems.map((a: string, i: number) => (
+          {result.top3Problems.map((a, i) => (
             <div key={a} style={itemRow}>
               <span style={itemNum}>{String(i + 1).padStart(2, "0")}</span>
               <div>
@@ -166,7 +166,7 @@ export function ResultPanel({ result }: { result: ScanResult }) {
 
       <div style={section}>
         <h3 style={sectionTitle}>추천 실행 순서</h3>
-        {result.recommendedOrder.map((a: string, i: number) => (
+        {result.recommendedOrder.map((a, i) => (
           <div key={a} style={itemRow}>
             <span style={itemNum}>{String(i + 1).padStart(2, "0")}</span>
             <div>
