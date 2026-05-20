@@ -51,13 +51,12 @@ export function CategoryFilter({ active }: { active: FilterValue }) {
   const options: FilterValue[] = [ALL, ...SHOWROOM_CATEGORIES]
 
   return (
-    <div style={row} role="tablist" aria-label="카테고리 필터">
+    <div style={row} role="group" aria-label="카테고리 필터">
       {options.map((opt) => (
         <button
           key={opt}
           type="button"
-          role="tab"
-          aria-selected={active === opt}
+          aria-pressed={active === opt}
           style={active === opt ? activeChip : baseChip}
           onClick={() => setCat(opt)}
         >

@@ -9,7 +9,7 @@ import { CategoryFilter, ALL, type FilterValue } from "./CategoryFilter"
 
 const grid: CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 320px), 1fr))",
   gap: "24px",
 }
 

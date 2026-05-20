@@ -1,61 +1,63 @@
 # .cursorrules — yohan-studio
 
 ## 프로젝트 개요
-요한 스튜디오: 백요한의 개인 풀스택 플랫폼 (랜딩 + 블로그 + 포트폴리오 + 스토어)
-바이브코딩으로 구축하는 1인 브랜드 웹사이트.
+요한 스튜디오: AI 시대의 1인 기업가를 위한 First Platform.
+바이브코딩으로 구축하는 AI 운영체계 웹 플랫폼.
 
-## 현재 Phase: 1 (랜딩 + 포트폴리오)
-⚠️ Phase 1 범위만 구현할 것. 실제 블로그 MDX·스토어 결제·DB는 Phase 2~4.
+## 현재 Phase: 2 (블로그 + SEO + AI'm OS 확장)
+⚠️ Phase 2 범위만 구현. Supabase/결제/DB는 Phase 3.
+Phase 1 완료: 랜딩 + 포트폴리오 배포 완료.
+블로그 + SEO (①~⑬): 완료.
+AI'm OS 확장 (⑭~⑰): /showroom, /diagnosis, /services, Home 리뉴얼.
 
 ## 기술 스택
-- Next.js 16 (App Router) + TypeScript (strict), 앱 디렉터리: `src/app/`
+- Next.js 16 (App Router) + TypeScript (strict)
 - Tailwind CSS 4 + `src/styles/tokens.css` (CSS Variables — v2 Editorial × Soft Brutalism)
-- Pretendard Variable: `src/app/globals.css` 최상단 CDN `@import`
-- JetBrains Mono: `next/font/google` in `src/app/layout.tsx` → `--font-mono`
+- MDX (next-mdx-remote/rsc)
+- Pretendard (한글, next/font/local) + Inter (영문) + JetBrains Mono (코드)
 - Vercel 배포
+- SEO: next-sitemap + @vercel/og + JSON-LD
 
 ## 디자인 규칙 (v2)
-- 기본: 라이트 페이퍼 톤 (`tokens.css` `:root`). 다크는 `[data-theme="dark"]`만 준비(Phase 2에서 토글 연동).
-- 모바일 퍼스트: 좁은 화면에서 그리드 1열 → `md:` 이상 다열 (`Hero`·`Footer` 등에 Tailwind 보조)
-- 색·보더·섀도우는 **헥스 하드코딩 지양** → `var(--ink)`, `var(--accent)` 등 토큰 사용
-- 브루탈리즘: `--radius: 0`, 오프셋 솔리드 섀도우, 하드 보더
+- 라이트 기본: off-white #F4F1EA + 잉크 #0A0A0A + 오렌지 #FF5C28
+- 다크모드: #0A0A0A bg + #F1F5F9 text + #FF5C28 primary
+- 모서리: rounded-none
+- 보더: 1.5px solid #000
+- 그림자: hard shadow (4px 0 0 #000)
+- 그라디언트: 없음
+- 모바일 퍼스트: 375px → sm → md → lg
+- 색·보더·섀도우는 헥스 하드코딩 지양 → `var(--ink)`, `var(--accent)` 토큰 사용
 
 ## 코딩 규칙
-- 컴포넌트: `src/components/{layout,sections,portfolio}/` + 필요 시 `src/components/ui/`
+- 컴포넌트: `src/components/{ui,layout,sections,blog,portfolio,showroom,diagnosis,services}/`
 - 페이지: `src/app/`
-- 정적 카피·목록: `src/data/` (`aboutTimeline`, `featured`, `portfolioProjects` 등)
+- 정적 데이터: `src/data/` (projects, diagnosisQuestions, services)
+- 타입: `src/types/` (project.ts, diagnosis.ts, service.ts)
 - TypeScript strict, `any` 금지
-- `"use client"`: 폼 포커스·상태·`mailto` 트리거 등 **인터랙션 있는 컴포넌트만** (예: `Contact.tsx`)
-- 그 외 섹션·레이아웃은 Server Component 우선
-- 컴포넌트 파일명: `PascalCase.tsx`
-- 데이터·유틸: `camelCase.ts`
-- Claude Design에서 온 `.jsx`는 `.tsx`로 이관 시 `Object.assign(window, …)` 제거, V2 접두사 파일명 제거
+- `"use client"`: 인터랙션 있는 컴포넌트만 (DiagnosisForm, CategoryFilter 등)
+- 그 외 Server Component 우선
+- 컴포넌트: PascalCase.tsx, 데이터·유틸: camelCase.ts
 
-## Phase 1 금지 사항
-- ❌ API Routes (Phase 3 이후 검토)
-- ❌ Supabase/DB
-- ❌ Stripe/실결제
-- ❌ MDX 블로그 파이프라인
-- ❌ 외부 API 호출
-- ✅ 연락처: `mailto:` + 클라이언트 폼 조합 OK (백엔드 저장 없음)
-- ✅ Featured 블로그/스토어: `src/data/` 하드코딩 플레이스홀더
+## Phase 2 허용
+✅ MDX 블로그 | next-sitemap | @vercel/og | JSON-LD (Article/FAQ/HowTo)
+✅ GA/GSC | 다크모드 | 정적 데이터 (src/data/) | 클라이언트 진단 로직
+✅ 외부 폼 URL (NEXT_PUBLIC_CONTACT_FORM_URL)
+✅ /showroom, /diagnosis, /services, /about 신규 라우트
 
-## 폴더 구조 (Phase 1)
-src/
-├── app/
-│   ├── layout.tsx          # 폰트·globals·Header/Footer 래핑
-│   ├── page.tsx            # Hero → Portfolio → About → Featured → Contact
-│   ├── globals.css         # Pretendard @import → tailwindcss → tokens.css
-│   └── portfolio/page.tsx  # 동일 Portfolio 섹션 단독 페이지
-├── components/
-│   ├── layout/             # Header, Footer
-│   ├── sections/           # Hero, About, Featured, Contact
-│   └── portfolio/          # Portfolio
-├── data/                   # aboutTimeline, featured, portfolioProjects
-└── styles/
-    └── tokens.css          # v2 CSS Variables (+ 다크 플레이스홀더)
+## Phase 2 금지
+❌ Supabase/DB | Stripe/결제 | API Routes (OG 제외) | n8n 웹훅
+❌ 진단 결과 서버 저장 | 예약/결제 기능 | RAG/Qdrant
+
+## ⚠️ 007~010 보호
+- 기존 /blog, /design, SEO, 다크모드 시스템 수정 금지
+- 예외: sitemap 새 경로 추가, Header/Footer 네비 링크 추가
+
+## 기록 규칙 (Cursor)
+- 콘텐츠/스타일 변경 후 변경 사항을 git commit 메시지에 명확히 기술.
+- 대규모 스타일 변경 시 docs/log/에 기록 남기기 권장.
 
 ## 참고 문서
-- docs/ssod.md: 프로젝트 전체 맥락 + 로드맵 (SSOT)
-- yohan-context.md (프로젝트 루트): 요한 소개 + 브랜드 톤
-- docs/design/claude-design-workflow.md: Claude Design → Cursor 연동 + TS 변환 규칙
+- CLAUDE.md: Claude Code 전용 전체 컨텍스트
+- AGENTS.md: 프로젝트 공통 규칙
+- docs/SSOT.md: 프로젝트 맥락 + 로드맵
+
