@@ -13,6 +13,9 @@
     "qa:summarize": "tsx scripts/qa-summarize.ts"
   },
   "dependencies": {
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "^16.2.6",
     "@next/third-parties": "^16.2.4",
     "gray-matter": "^4.0.3",
     "next": "16.2.4",

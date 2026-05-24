@@ -5,6 +5,12 @@ import { compileMDX } from "next-mdx-remote/rsc"
 import type { ReactElement } from "react"
 import { BlogImage } from "@/components/blog/mdx/BlogImage"
 import { CodeBlock } from "@/components/blog/mdx/CodeBlock"
+import {
+  getComponentPostContent,
+  getComponentPostMeta,
+  getComponentPostSlugs,
+  getPublishedComponentPosts,
+} from "@/lib/blog-component-posts"
 
 const mdxComponents = {
   pre: CodeBlock,
@@ -76,14 +82,19 @@ function readFileRaw(slug: string): string | null {
 }
 
 export function getAllSlugs(): string[] {
-  if (!fs.existsSync(CONTENT_DIR)) return []
-  return fs
-    .readdirSync(CONTENT_DIR)
-    .filter((f) => f.endsWith(".mdx"))
-    .map((f) => f.replace(/\.mdx$/, ""))
+  const fileSlugs = fs.existsSync(CONTENT_DIR)
+    ? fs
+        .readdirSync(CONTENT_DIR)
+        .filter((f) => f.endsWith(".mdx"))
+        .map((f) => f.replace(/\.mdx$/, ""))
+    : []
+  return [...new Set([...fileSlugs, ...getComponentPostSlugs()])]
 }
 
 export function getPostMeta(slug: string): BlogPostMeta | null {
+  const componentMeta = getComponentPostMeta(slug)
+  if (componentMeta) return componentMeta
+
   const raw = readFileRaw(slug)
   if (!raw) return null
   const { data } = matter(raw)
@@ -91,10 +102,19 @@ export function getPostMeta(slug: string): BlogPostMeta | null {
 }
 
 export function getPublishedPosts(): BlogPostMeta[] {
-  return getAllSlugs()
-    .map((slug) => getPostMeta(slug))
-    .filter((m): m is BlogPostMeta => m !== null && m.published)
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
+  const posts = [
+    ...getPublishedComponentPosts(),
+    ...getAllSlugs()
+      .map((slug) => getPostMeta(slug))
+      .filter((m): m is BlogPostMeta => m !== null && m.published),
+  ]
+
+  const bySlug = new Map<string, BlogPostMeta>()
+  for (const post of posts) {
+    bySlug.set(post.slug, post)
+  }
+
+  return [...bySlug.values()].sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
 export type AdjacentPosts = {
@@ -118,6 +138,12 @@ export async function compileBlogPost(slug: string): Promise<{
   meta: BlogPostMeta
   content: ReactElement
 } | null> {
+  const componentMeta = getComponentPostMeta(slug)
+  const componentContent = getComponentPostContent(slug)
+  if (componentMeta && componentContent) {
+    return { meta: componentMeta, content: componentContent }
+  }
+
   const raw = readFileRaw(slug)
   if (!raw) return null
 
