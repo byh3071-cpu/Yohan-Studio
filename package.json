@@ -16,6 +16,7 @@
     "build": "next build",
     "start": "next start -p 3050",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "qa:install": "playwright install chromium",
     "qa:test": "playwright clear-cache && playwright test"
   },
