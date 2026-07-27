@@ -55,6 +55,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${product.name} — Yohan Studio Store`,
     description: product.description ?? undefined,
+    // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
+    // slug로도 UUID로도 접근되므로 slug를 정규 URL로 고정한다.
+    alternates: { canonical: `/store/${product.slug}` },
     openGraph: {
       title: product.name,
       description: product.description ?? undefined,

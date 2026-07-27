@@ -8,6 +8,12 @@ import { getPublishedPosts } from "@/lib/blog"
 export const metadata: Metadata = {
   title: "블로그",
   description: "개발·프로덕트·1인 기업에 관한 글",
+  // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
+  // alternates는 통째로 덮어써지므로 RSS alternate도 여기서 다시 명시한다.
+  alternates: {
+    canonical: "/blog",
+    types: { "application/rss+xml": "/rss.xml" },
+  },
 }
 
 export default function BlogIndexPage() {

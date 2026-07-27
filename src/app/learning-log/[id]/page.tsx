@@ -17,11 +17,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!page) {
     return { title: "러닝 로그 — Yohan Studio" }
   }
+  const description = `${page.title} — 특강·강연에서 배운 것의 현장 기록. 요한 스튜디오 러닝 로그.`
   return {
     title: `${page.title} — 러닝 로그`,
+    description,
+    // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
+    alternates: { canonical: `/learning-log/${id}` },
     openGraph: {
       type: "article",
       title: page.title,
+      description,
       siteName: "Yohan Studio",
       locale: "ko_KR",
     },

@@ -9,6 +9,8 @@ import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd"
 export const metadata: Metadata = {
   title: "업데이트",
   description: "SnapContext·VHK 제품 릴리즈 노트 — 모든 버전의 변경 사항을 기록합니다.",
+  // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
+  alternates: { canonical: "/updates" },
 }
 
 export default async function UpdatesPage() {
