@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSR과 SEO — 요한 스튜디오 실측 보고서</title>
+<style>
+  :root{
+    --bg:#F4F1EA; --surface:#EEEAE0; --surface2:#E5E0D2;
+    --ink:#0A0A0A; --ink2:#2B2723; --muted:#6B6357;
+    --accent:#FF5C28; --ok:#1F7A4D; --warn:#B45309;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+    line-height:1.7; -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px}
+  code,.mono{font-family:"JetBrains Mono",Consolas,"Courier New",monospace;font-size:.88em}
+
+  /* 헤더 */
+  header.top{border-bottom:1.5px solid var(--ink);padding-bottom:20px;margin-bottom:36px}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  h1{font-size:clamp(26px,5vw,40px);line-height:1.25;letter-spacing:-.02em;margin:10px 0 8px;font-weight:800}
+  .meta{font-size:13px;color:var(--muted)}
+
+  /* 결론 박스 */
+  .verdict{
+    border:1.5px solid var(--ink);background:var(--accent);color:#0A0A0A;
+    box-shadow:4px 4px 0 var(--ink); padding:22px 20px; margin-bottom:14px;
+  }
+  .verdict p{font-size:clamp(17px,3.2vw,22px);font-weight:800;line-height:1.5;letter-spacing:-.01em}
+  .three{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:44px}
+  @media(min-width:720px){.three{grid-template-columns:repeat(3,1fr)}}
+  .card{border:1.5px solid var(--ink);background:var(--surface);padding:14px 16px;box-shadow:2px 2px 0 var(--ink)}
+  .card .n{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--accent)}
+  .card .b{font-size:15px;font-weight:700;margin-top:4px}
+  .card .s{font-size:13px;color:var(--ink2);margin-top:4px}
+
+  /* 섹션 */
+  section{margin-bottom:52px}
+  h2{
+    font-size:clamp(20px,3.6vw,26px);font-weight:800;letter-spacing:-.01em;
+    border-bottom:1.5px solid var(--ink);padding-bottom:8px;margin-bottom:8px;
+  }
+  h2 .num{color:var(--accent);margin-right:10px}
+  .lede{font-size:15px;color:var(--ink2);margin-bottom:18px}
+  h3{font-size:16px;font-weight:800;margin:26px 0 8px}
+  p{margin-bottom:12px}
+  ul{margin:0 0 14px 20px}
+  li{margin-bottom:6px}
+
+  /* 표 */
+  .scroll{overflow-x:auto;border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);margin-bottom:16px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+  th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid rgba(10,10,10,.14)}
+  th{background:var(--surface2);font-weight:800;font-size:12.5px;letter-spacing:.02em;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  tr.bad td{background:rgba(255,92,40,.13)}
+  tr.bad td:first-child{box-shadow:inset 4px 0 0 var(--accent)}
+  .yes{color:var(--ok);font-weight:800}
+  .no{color:var(--accent);font-weight:800}
+  .dim{color:var(--muted)}
+
+  /* 인용 */
+  blockquote{
+    border-left:4px solid var(--accent);background:var(--surface);
+    padding:12px 16px;margin:0 0 14px;font-size:14px;
+  }
+  blockquote .src{display:block;margin-top:8px;font-size:12px;color:var(--muted);font-weight:700}
+
+  /* 코드 */
+  pre{
+    background:#0A0A0A;color:#F4F1EA;border:1.5px solid var(--ink);
+    padding:14px 16px;overflow-x:auto;margin-bottom:14px;font-size:13px;line-height:1.6;
+    box-shadow:4px 4px 0 rgba(10,10,10,.25);
+  }
+  pre .c{color:#968D7E}
+  pre .o{color:#FF5C28}
+
+  /* 배지 */
+  .badge{display:inline-block;border:1.5px solid var(--ink);padding:1px 8px;font-size:11px;font-weight:800;letter-spacing:.04em;white-space:nowrap}
+  .b-hi{background:var(--accent);color:#0A0A0A}
+  .b-mid{background:#FFD9A0}
+  .b-ok{background:#BFE6CE}
+  .b-unk{background:var(--surface2);color:var(--muted)}
+  .tag{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.04em}
+
+  /* 도식 */
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin-bottom:16px}
+  .step{flex:1 1 150px;border:1.5px solid var(--ink);background:var(--surface);padding:12px;font-size:13px;box-shadow:2px 2px 0 var(--ink)}
+  .step b{display:block;font-size:13px;margin-bottom:3px}
+  .step.hit{background:var(--accent)}
+  .arrow{align-self:center;font-weight:800;color:var(--muted)}
+
+  /* 용어 */
+  .term{border-bottom:2px dotted var(--accent);font-weight:700}
+  .note{font-size:13px;color:var(--muted);border-left:3px solid var(--surface2);padding-left:12px;margin-bottom:14px}
+
+  footer{border-top:1.5px solid var(--ink);padding-top:18px;font-size:13px;color:var(--muted)}
+  a{color:var(--ink);text-decoration:underline;text-underline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div class="kicker">yohan studio · 렌더링 &amp; 검색노출 실측</div>
+  <h1>SSR이 SEO에 좋다는 말,<br>반은 맞고 반은 틀렸다</h1>
+  <div class="meta">조사일 2026-07-27 · 대상 yohanstudio.co (Next.js 16.2.4) · 코드 변경 0건 · 모든 수치는 라이브 사이트 직접 측정값</div>
+</header>
+
+<div class="verdict">
+  <p>SSR은 우리 문제가 아니다. 이 사이트는 이미 페이지 18장 중 15장이 서버에서 완성된 HTML로 나간다.
+  진짜 문제는 목록 페이지 딱 3장 — <span class="mono">/blog</span> · <span class="mono">/updates</span> · <span class="mono">/showroom</span> 이 검색로봇 눈에는 <b>백지</b>로 보인다는 것.</p>
+</div>
+
+<div class="three">
+  <div class="card">
+    <div class="n">핵심 1</div>
+    <div class="b">축이 SSR이 아니다</div>
+    <div class="s">"SSR이냐 SSG냐"가 아니라 <b>서버가 보낸 HTML에 글이 들어있냐</b>가 전부다. 우리가 쓰는 SSG는 SSR보다 열등하지 않다. 오히려 더 빠르다.</div>
+  </div>
+  <div class="card">
+    <div class="n">핵심 2</div>
+    <div class="b">결함 3장, 실측 확인</div>
+    <div class="s"><span class="mono">/blog</span> HTML에 글 링크 <b>0건</b>. <span class="mono">/updates</span>에 버전 표기 <b>0건</b>. <span class="mono">/showroom</span>은 9개 중 1개만.</div>
+  </div>
+  <div class="card">
+    <div class="n">핵심 3</div>
+    <div class="b">손해는 AI 쪽이 더 크다</div>
+    <div class="s">구글은 JS를 돌려서 결국 본다(늦게). <b>ChatGPT·Claude·Perplexity 크롤러는 JS를 아예 실행 안 한다</b> → 영영 못 본다.</div>
+  </div>
+</div>
+
+<!-- ============ 1 ============ -->
+<section>
+  <h2><span class="num">1</span>먼저 개념부터 바로잡기</h2>
+  <p class="lede">들은 말이 틀린 건 아닌데, 문장이 뭉개져 있다. 정확한 문장으로 바꾸면 이렇다.</p>
+
+  <p><b>❌ 들은 말:</b> "SSR을 써야 SEO에 좋다"<br>
+  <b>✅ 정확한 말:</b> "서버가 보낸 HTML에 글이 이미 들어있어야 검색에 좋다"</p>
+
+  <p>HTML을 <span class="term">언제</span> 만드느냐로 방식이 4가지 갈리는데, 검색 관점에서 중요한 건 시점이 아니라 <b>만드는 주체가 서버냐 브라우저냐</b>다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr>
+      <th>방식</th><th>HTML을 언제·누가 만드나</th><th>검색로봇이 받는 것</th><th>SEO</th><th>우리 사이트 예시</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><b>SSG</b><br><span class="dim">정적 생성</span></td>
+        <td>배포할 때 <b>서버</b>가 미리 다 만들어 파일로 저장</td>
+        <td>완성된 글이 통째로</td>
+        <td><span class="yes">최상</span></td>
+        <td><span class="mono">/blog/[글]</span>, <span class="mono">/design</span></td>
+      </tr>
+      <tr>
+        <td><b>ISR</b><br><span class="dim">주기적 재생성</span></td>
+        <td>SSG와 같되, 정해둔 시간마다 <b>서버</b>가 다시 만듦</td>
+        <td>완성된 글이 통째로</td>
+        <td><span class="yes">최상</span></td>
+        <td><span class="mono">/</span> 60초, <span class="mono">/learning-log</span> 1시간</td>
+      </tr>
+      <tr>
+        <td><b>SSR</b><br><span class="dim">요청 때 생성</span></td>
+        <td>방문자가 들어올 때마다 <b>서버</b>가 즉석에서</td>
+        <td>완성된 글이 통째로</td>
+        <td><span class="yes">최상</span></td>
+        <td><span class="mono">/learning-log/[id]</span></td>
+      </tr>
+      <tr class="bad">
+        <td><b>CSR</b><br><span class="dim">브라우저가 그림</span></td>
+        <td>서버는 빈 껍데기만 보내고 <b>브라우저</b>가 JS 돌려서 채움</td>
+        <td>빈 껍데기</td>
+        <td><span class="no">나쁨</span></td>
+        <td><span class="mono">/blog</span> 목록, <span class="mono">/updates</span>, <span class="mono">/showroom</span> 목록</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>즉 <b>위 3개(SSG·ISR·SSR)는 SEO상 사실상 동급</b>이다. 굳이 SSR로 바꿀 이유가 없고, 오히려 SSG가 더 빠르고 싸다. 문제는 4번째 줄 하나뿐이다.</p>
+
+  <blockquote>
+    "Server-side or pre-rendering is still a great idea because it makes your website faster for users and crawlers, <b>and not all bots can run JavaScript</b>."
+    <span class="src">— Google Search Central, JavaScript SEO Basics · 마지막 문장이 이번 조사의 핵심이다</span>
+  </blockquote>
+
+  <div class="note"><b>용어 1줄 풀이</b> — <b>크롤러/검색로봇</b>: 사이트를 자동으로 읽어가는 프로그램. · <b>프리렌더</b>: 방문자가 오기 전에 미리 HTML을 만들어두는 것. · <b>하이드레이션</b>: 서버가 만든 HTML 위에 브라우저가 JS를 붙여 버튼이 눌리게 만드는 과정.</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section>
+  <h2><span class="num">2</span>우리 사이트 렌더링 지도</h2>
+  <p class="lede">페이지 18장 전수 조사. 놀랍게도 <span class="mono">src/app</span> 아래 페이지 파일 중 <b>"use client"가 붙은 건 0개</b> — 구조는 이미 교과서적으로 서버 중심이다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr>
+      <th>경로</th><th>렌더 방식</th><th>갱신</th><th>로봇이 본문을 보나</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="mono">/</td><td>ISR</td><td>60초</td><td><span class="yes">✅ 보임</span> <span class="dim">Now 피드 포함</span></td></tr>
+      <tr class="bad"><td class="mono">/blog</td><td>SSG + <b>목록만 CSR</b></td><td>배포 시</td><td><span class="no">❌ 목록 0건</span></td></tr>
+      <tr><td class="mono">/blog/[slug]</td><td>SSG <span class="dim">(10편 사전생성)</span></td><td>배포 시</td><td><span class="yes">✅ 본문 전체</span></td></tr>
+      <tr class="bad"><td class="mono">/updates</td><td>SSG + <b>전체 CSR</b></td><td>배포 시</td><td><span class="no">❌ 릴리즈 0건</span></td></tr>
+      <tr class="bad"><td class="mono">/showroom</td><td>SSG + <b>목록만 CSR</b></td><td>배포 시</td><td><span class="no">❌ 9개 중 1개만</span></td></tr>
+      <tr><td class="mono">/showroom/[slug]</td><td>SSG <span class="dim">(8건 사전생성)</span></td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/learning-log</td><td>ISR</td><td>1시간</td><td><span class="yes">✅ 3건 보임</span></td></tr>
+      <tr><td class="mono">/learning-log/[id]</td><td>SSR <span class="dim">(요청 시)</span></td><td>1시간</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/store</td><td>ISR</td><td>60초</td><td><span class="yes">✅ 상품 3건</span></td></tr>
+      <tr><td class="mono">/store/[id]</td><td>SSR <span class="dim">(요청 시)</span></td><td>60초</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/store/checkout/success</td><td>SSR <span class="dim">동적</span></td><td>매번</td><td><span class="dim">— 색인 제외 설정됨</span></td></tr>
+      <tr><td class="mono">/contact</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/diagnosis</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/design</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/services</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/open-source</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/vhk</td><td>SSG</td><td>배포 시</td><td><span class="yes">✅ 보임</span></td></tr>
+      <tr><td class="mono">/_not-found</td><td>SSG</td><td>배포 시</td><td><span class="dim">— 해당 없음</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><b>결론: 15장 정상 / 3장 결함.</b> 블로그 <b>글 자체</b>(<span class="mono">/blog/[slug]</span>)는 완전히 정상이다. 본문이 통째로 HTML에 실린다. 문제는 글로 가는 <b>목록 페이지</b>다.</p>
+
+  <div class="note"><b>부수 발견 — 문서와 실제가 다름</b><br>
+  CLAUDE.md 기술스택 표에 적힌 두 가지가 실제와 다르다. ① OG 이미지는 <span class="mono">@vercel/og</span>가 아니라 Next 내장 <span class="mono">next/og</span>를 쓴다(패키지 자체가 설치돼 있지 않음). ② sitemap은 <span class="mono">next-sitemap</span>이 아니라 네이티브 <span class="mono">src/app/sitemap.ts</span>다. 기능은 정상이니 급하진 않지만, 문서를 실제에 맞추는 게 좋다.</div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section>
+  <h2><span class="num">3</span>결함 3장 — 증거</h2>
+  <p class="lede">추측이 아니라 라이브 사이트에서 직접 받아본 HTML을 센 숫자다.</p>
+
+<pre><span class="c"># 실제로 실행한 명령 (2026-07-27)</span>
+curl -sL https://yohanstudio.co/blog | grep -o 'href="/blog/[a-z0-9-]*"' | sort -u | wc -l
+<span class="o">→ 0</span>          <span class="c"># 글 링크가 한 개도 없음 (HTML 크기는 44,941 바이트)</span>
+
+curl -sL https://yohanstudio.co/updates | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | wc -l
+<span class="o">→ 0</span>          <span class="c"># 릴리즈 버전 표기 0건 (HTML 45,108 바이트)</span>
+
+curl -sL https://yohanstudio.co/showroom | grep -o 'href="/showroom/[a-z0-9-]*"' | sort -u | wc -l
+<span class="o">→ 1</span>          <span class="c"># 상단 대표 배너 1개만. 나머지 8개 프로젝트 누락</span>
+
+<span class="c"># 대조군 — 정상 페이지</span>
+curl -sL https://yohanstudio.co/blog/hello-world | grep -o '&lt;h2' | wc -l
+<span class="o">→ 2</span>          <span class="c"># 본문 소제목 정상 포함 ✅</span></pre>
+
+  <h3>왜 이렇게 되나</h3>
+  <p>세 페이지 다 <b>똑같은 한 가지 패턴</b> 때문이다. 목록을 그리는 컴포넌트가 주소창의 <span class="mono">?tag=...</span> 값을 읽으려고 <span class="mono">useSearchParams()</span>를 쓰는데, 이 함수는 "방문자가 실제로 접속해야만" 값을 알 수 있다. 그래서 미리 만들어두는 단계에서는 <b>그 부분을 통째로 포기하고 브라우저에 떠넘긴다.</b></p>
+
+  <div class="flow">
+    <div class="step"><b>1. 빌드</b>목록 컴포넌트가 <span class="mono">useSearchParams()</span> 호출</div>
+    <div class="arrow">→</div>
+    <div class="step hit"><b>2. 포기</b>가장 가까운 <span class="mono">Suspense</span> 경계까지 프리렌더 중단</div>
+    <div class="arrow">→</div>
+    <div class="step"><b>3. HTML</b>그 자리에 대체물(<span class="mono">fallback</span>)만 남음 — 우리는 <span class="mono">null</span>, 즉 <b>아무것도 안 남음</b></div>
+    <div class="arrow">→</div>
+    <div class="step"><b>4. 브라우저</b>JS 실행 후에야 목록이 그려짐</div>
+  </div>
+
+  <blockquote>
+    "If a route is prerendered, calling <span class="mono">useSearchParams</span> will cause the Client Component tree up to the closest Suspense boundary to be <b>client-side rendered</b>."<br><br>
+    "This component passed as a fallback to the Suspense boundary <b>will be rendered in place of</b> the search bar in the initial HTML."
+    <span class="src">— Next.js 공식 문서, useSearchParams (v16.2.12) · 즉 이건 버그가 아니라 <b>설계된 동작</b>이다. 우리가 fallback을 null로 둔 게 문제.</span>
+  </blockquote>
+
+  <p>해당 위치 (참고용):</p>
+  <ul>
+    <li><span class="mono">src/app/blog/page.tsx:74-76</span> → <span class="mono">TagFilter.tsx:23</span></li>
+    <li><span class="mono">src/app/updates/page.tsx:83-85</span> → <span class="mono">UpdatesFeed.tsx:29</span></li>
+    <li><span class="mono">src/app/showroom/page.tsx:103-105</span> → <span class="mono">ProjectGrid.tsx:36</span></li>
+  </ul>
+
+  <div class="note"><b>정직하게 짚을 뉘앙스</b> — 데이터가 HTML에 <b>아예 없는 건 아니다</b>. 페이지 소스 안쪽 <span class="mono">&lt;script&gt;</span> 덩어리(RSC 페이로드)에는 글 주소 문자열이 들어있다. 하지만 그건 <b>링크도 아니고 읽히는 글도 아니다</b> — 로봇이 "이 페이지에서 저 페이지로 가는 길"로 인식하지 못한다. Vercel 문서도 "색인될 수도 있다" 정도로만 말한다. 기대면 안 되는 근거다.</div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section>
+  <h2><span class="num">4</span>누가 손해를 보나</h2>
+  <p class="lede">여기가 이번 조사에서 제일 중요한 부분이다. 구글만 생각하면 "괜찮네" 하고 넘어가게 된다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>누구</th><th>JS 실행</th><th>우리 목록 3장을</th><th>근거</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Googlebot</b><br><span class="dim">구글 검색</span></td>
+        <td><span class="yes">한다</span></td>
+        <td><span class="dim">결국 본다. 단 <b>나중에</b></span></td>
+        <td>크롤 → <b>렌더 대기줄</b> → 색인 3단계. 대기줄은 "몇 초일 수도, 그보다 더 걸릴 수도" (구글 공식 표현)</td>
+      </tr>
+      <tr class="bad">
+        <td><b>GPTBot · ClaudeBot<br>PerplexityBot</b><br><span class="dim">AI 검색·답변</span></td>
+        <td><span class="no">안 한다</span></td>
+        <td><span class="no">영영 못 본다</span></td>
+        <td>Vercel이 nextjs.org 트래픽 수개월 실측: "주요 AI 크롤러 중 JS를 렌더하는 건 하나도 없다". Claude는 JS 파일을 23.84% 받아가면서도 <b>실행은 안 함</b></td>
+      </tr>
+      <tr>
+        <td><b>Yeti</b><br><span class="dim">네이버</span></td>
+        <td><span class="dim">불명</span></td>
+        <td><span class="dim">불명</span></td>
+        <td><span class="badge b-unk">미확인</span> 네이버 공식 가이드가 우리 쪽 크롤러를 차단해 1차 확인 실패. 2차 자료들은 "네이버가 SSR 도입을 권장한다"고 하나 <b>단정하지 않는다</b></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <blockquote>
+    "none of the major AI crawlers currently render JavaScript. This includes: OpenAI (OAI-SearchBot, ChatGPT-User, GPTBot) [and] Anthropic (ClaudeBot)"
+    <span class="src">— Vercel, "The rise of the AI crawler" (2024-12-17) · nextjs.org 실트래픽 수개월 측정</span>
+  </blockquote>
+
+  <h3>⚠️ 자기모순 지점</h3>
+  <p>이 사이트는 <b>AI 검색 노출을 노리고 설계됐다</b>. <span class="mono">src/app/robots.ts</span>에서 AI 크롤러를 <b>명시적으로 허용</b>하고, <span class="mono">llms.txt</span>·<span class="mono">llms-full.txt</span>까지 깔아뒀다. 그런데 정작 그 AI 크롤러들이 <b>JS를 못 돌려서</b>, 블로그·릴리즈·쇼룸 목록 3장을 백지로 받아간다. <b>전략과 구현이 어긋나 있다.</b></p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section>
+  <h2><span class="num">5</span>얼마나 심각한가 — 과장 없이</h2>
+  <p class="lede">완충 장치가 있어서 "재앙"은 아니다. 그것도 실측했다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>우회로</th><th>실측</th><th>효과</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">sitemap.xml</td><td>URL 30개 (그중 블로그 글 11개)</td><td>구글은 목록 페이지 없이도 <b>글 하나하나를 직접 발견</b>할 수 있다</td></tr>
+      <tr><td class="mono">rss.xml</td><td>item 11개</td><td>구독·수집 경로 살아있음</td></tr>
+      <tr><td class="mono">llms-full.txt</td><td>5,854 바이트, 글 주소 포함</td><td>AI 크롤러가 <b>이걸 읽어준다면</b> 일부 보완됨 (읽어준다는 보장은 없음)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>페이지</th><th>심각도</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="mono">/blog</td>
+        <td><span class="badge b-mid">중</span></td>
+        <td>글 11편이 sitemap·RSS·llms-full에 다 있어서 발견 경로가 살아있다. 잃는 건 "목록 → 글" 내부 링크 신호와 태그 페이지의 색인 표면</td>
+      </tr>
+      <tr>
+        <td class="mono">/showroom</td>
+        <td><span class="badge b-mid">중</span></td>
+        <td>같은 이유. 다만 대표 배너 1건 외 8건은 목록에서 안 보임</td>
+      </tr>
+      <tr class="bad">
+        <td class="mono">/updates</td>
+        <td><span class="badge b-hi">높음</span></td>
+        <td><b>상세 페이지가 아예 없다.</b> 릴리즈 노트 본문 전체가 이 한 장에 인라인으로 들어있는데, 그 한 장이 백지로 나간다 → <b>릴리즈 노트 내용이 크롤 가능한 HTML 어디에도 존재하지 않는다</b></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section>
+  <h2><span class="num">6</span>앞으로 직접 확인하는 법 <span class="tag">학습</span></h2>
+  <p class="lede">이게 이번 조사에서 가져갈 가장 실용적인 기술이다. 한 번 익히면 어떤 사이트든 30초 안에 판정할 수 있다.</p>
+
+  <p><b>함정부터.</b> 브라우저에서 F12(개발자도구)로 보면 <b>항상 정상으로 보인다.</b> 개발자도구는 JS가 다 돌아간 <b>후</b>의 화면을 보여주기 때문이다. 검색로봇이 보는 건 그게 아니다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th>보는 방법</th><th>보이는 것</th><th>로봇 관점에서</th></tr></thead>
+    <tbody>
+      <tr><td>F12 개발자도구 → Elements</td><td>JS 실행 <b>후</b> 최종 화면</td><td><span class="no">❌ 판정 불가</span></td></tr>
+      <tr><td><b>Ctrl+U</b> (페이지 소스 보기)</td><td>서버가 보낸 <b>원본</b> HTML</td><td><span class="yes">✅ 이게 정답</span></td></tr>
+      <tr><td>터미널 <span class="mono">curl</span></td><td>서버가 보낸 <b>원본</b> HTML</td><td><span class="yes">✅ 이게 정답</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>가장 쉬운 방법 — 클릭 3번</h3>
+  <ul>
+    <li>확인할 페이지에서 <b>Ctrl+U</b></li>
+    <li><b>Ctrl+F</b> 로 화면에 보이는 제목 한 줄을 검색</li>
+    <li>안 나오면 → <b>그 내용은 로봇 눈에 없는 것</b></li>
+  </ul>
+
+  <h3>PowerShell로 세는 법 (윈도우 기본)</h3>
+<pre><span class="c"># /blog HTML에 글 링크가 몇 개나 들어있나</span>
+((Invoke-WebRequest "https://yohanstudio.co/blog").Content |
+  Select-String 'href="/blog/[a-z0-9-]+"' -AllMatches).Matches.Count
+
+<span class="c"># 정상 페이지와 비교해보면 차이가 바로 보인다</span>
+((Invoke-WebRequest "https://yohanstudio.co/blog/hello-world").Content |
+  Select-String '&lt;h2' -AllMatches).Matches.Count</pre>
+
+  <div class="note"><b>기억할 한 문장</b> — "Ctrl+U 에서 안 보이면, 구글엔 늦게 보이고 AI 검색엔 아예 안 보인다."</div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section>
+  <h2><span class="num">7</span>고칠 때 선택지 <span class="tag">이번엔 실행 안 함</span></h2>
+  <p class="lede">참고용. 실제 수정은 별도 세션에서 결정한다.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th></th><th>방법</th><th>얻는 것</th><th>잃는 것</th><th>규모</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>A</b> <span class="badge b-ok">권장</span></td>
+        <td>목록 전체를 서버에서 그려 HTML에 싣고, 클릭 필터는 JS가 붙은 뒤 <b>보이기/숨기기</b>만 담당</td>
+        <td>HTML에 전 항목 포함 + 지금의 빠른 정적 방식 유지</td>
+        <td>거의 없음</td>
+        <td>3파일</td>
+      </tr>
+      <tr>
+        <td><b>B</b></td>
+        <td>주소창 값을 <b>서버가</b> 읽어서 걸러진 목록을 만들어 보냄</td>
+        <td>필터 결과 자체가 HTML에 담김</td>
+        <td>페이지가 매번 서버에서 만들어짐 → 미리 만들어두는 이점 상실</td>
+        <td>3파일</td>
+      </tr>
+      <tr>
+        <td><b>C</b></td>
+        <td>태그를 진짜 주소로 승격 — <span class="mono">/blog/tag/ai</span> 같은 페이지를 미리 만듦</td>
+        <td>검색 노출면이 가장 넓어짐 (태그마다 한 페이지)</td>
+        <td>새 라우트 설계 필요, 작업량 최대</td>
+        <td>신규 라우트</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p><span class="mono">/updates</span>는 심각도가 높으니 어느 안을 고르든 <b>우선순위 1번</b>으로 두는 게 맞다.</p>
+</section>
+
+<!-- ============ 8 ============ -->
+<section>
+  <h2><span class="num">8</span>출처</h2>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>출처</th><th>급</th><th>이 보고서에서 쓴 근거</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics">Google Search Central — JavaScript SEO Basics</a></td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>크롤→렌더→색인 3단계, 렌더 대기줄, "모든 봇이 JS를 돌리는 건 아니다"</td>
+      </tr>
+      <tr>
+        <td><a href="https://vercel.com/blog/the-rise-of-the-ai-crawler">Vercel — The rise of the AI crawler</a> (2024-12-17)</td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>AI 크롤러 JS 미실행 실측, ChatGPT 11.50% / Claude 23.84% fetch 수치</td>
+      </tr>
+      <tr>
+        <td><a href="https://nextjs.org/docs/app/api-reference/functions/use-search-params">Next.js 공식 문서 — useSearchParams</a> (v16.2.12)</td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>프리렌더 시 Suspense 경계까지 CSR 전환, fallback이 초기 HTML에 대신 들어감</td>
+      </tr>
+      <tr>
+        <td><a href="https://nextjs.org/docs/app/getting-started/caching">Next.js 공식 문서 — Caching / 정적 셸</a></td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>정적 셸 개념, Suspense fallback이 셸에 포함되는 동작</td>
+      </tr>
+      <tr>
+        <td>yohanstudio.co 라이브 HTML 직접 측정</td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>결함 3건 수치, sitemap 30·RSS 11·llms-full 5,854바이트 전부</td>
+      </tr>
+      <tr>
+        <td>레포 <span class="mono">src/</span> + <span class="mono">.next/</span> 빌드 산출물 대조</td>
+        <td><span class="badge b-ok">1차</span></td>
+        <td>18개 라우트 렌더 방식 판정</td>
+      </tr>
+      <tr>
+        <td>네이버 서치어드바이저</td>
+        <td><span class="badge b-unk">미확인</span></td>
+        <td><b>확인 실패.</b> 공식 문서가 크롤 차단됨. 2차 자료의 "SSR 권장" 주장은 검증 못 함 → 이 보고서는 네이버에 대해 아무것도 단정하지 않는다</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<footer>
+  조사 2026-07-27 · 코드 변경 0건 · 문서 내 모든 수치는 재현 가능(§6 명령으로 직접 확인 가능)<br>
+  다음 액션 후보: ① <span class="mono">/updates</span> 우선 수정(A안) ② CLAUDE.md 기술스택 표기 정정 ③ 네이버 Yeti JS 지원 여부 재조사
+</footer>
+
+</div>
+</body>
+</html>
