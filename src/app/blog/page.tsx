@@ -3,6 +3,7 @@ import type { CSSProperties } from "react"
 import { Suspense } from "react"
 import Link from "next/link"
 import { TagFilter } from "@/components/blog/TagFilter"
+import { StaticPostList } from "@/components/blog/StaticPostList"
 import { getPublishedPosts } from "@/lib/blog"
 
 export const metadata: Metadata = {
@@ -71,7 +72,7 @@ export default function BlogIndexPage() {
           </h1>
           <p style={sub}>MDX · next-mdx-remote/rsc · 프론트매터 기반 정적 콘텐츠</p>
         </header>
-        <Suspense fallback={null}>
+        <Suspense fallback={<StaticPostList posts={posts} />}>
           <TagFilter posts={posts} />
         </Suspense>
       </div>
