@@ -1,7 +1,9 @@
 # 검색 노출 프로그램 — Goal 7개 / 티켓 30개
 
-작성 2026-07-27 · 상태: 계획 승인, 미착수
+작성 2026-07-27 · 개정 2026-07-27(계획 자체 검토 — 하단 개정 이력) · 상태: 계획 확정, 미착수
 관련: `docs/ssr-seo-report.html` (조사 근거) · `docs/backlog.md`
+
+**착수 전 열린 결정 2건** — `G5-T6`(초기 JS 334KB 감량 범위, 성능 vs 기능) · `G8`(콘텐츠 전략 신설 여부, G5-T1 데이터 후)
 
 각 Goal은 **독립 머지 가능**하다. 의존이 있는 경우만 명시했다.
 
@@ -89,17 +91,53 @@
 | **G1-T2** | **`/updates` CSR 결함 수정** (최상 — 상세 라우트가 없어 릴리즈 본문이 크롤 가능 HTML 어디에도 없음) | G1-T1 | ① 빌드 산출 `updates.html` 에 버전 문자열 5건 전부 존재 ② 필터 UI 하이드레이션 후 정상 ③ `?type=NEW` 등 기존 URL 파라미터 동작 유지 ④ `pnpm qa:test` 통과 |
 | **G1-T3** | **`/blog` CSR 결함 수정** — 동일 패턴 | G1-T2 | 빌드 산출 `blog.html` 에 `href="/blog/<slug>"` 가 발행 글 수만큼. 태그 필터 정상 |
 | **G1-T4** | **`/showroom` CSR 결함 수정** — 동일 패턴 | G1-T2 | 빌드 산출 `showroom.html` 에 프로젝트 링크 9건 전부 |
-| **G1-T5** | **회귀 방지 스모크 테스트.** "빌드된 HTML에 목록이 실려 있는가" 검사. 기존 `tests/qa.spec.ts` 의 `ROUTES` 루프 옆에 배치 | T2~T4 | ① 3장 각각 최소 링크 수 assert ② 일부러 되돌리면 **빨간불** ③ `pnpm qa:test` 로 실행 ④ CI 편입은 별도 판단(현재 ci.yml은 테스트 미실행) |
+| **G1-T5** | **회귀 방지 스모크 테스트.** "빌드된 HTML에 목록이 실려 있는가" 검사. ⚠️ **반드시 프로덕션 빌드 대상** — 아래 P1 참조 | T2~T4 | ① **dev 서버가 아닌 `next build && next start` 대상**으로 실행 ② 3장 각각 최소 링크 수 assert ③ 일부러 되돌리면 **빨간불** 확인(필수 — 이 검증을 안 하면 테스트가 무용지물인지 알 수 없다) ④ CI 편입은 별도 판단(현재 ci.yml은 테스트 미실행) |
+
+> **P1 — 이 티켓의 함정 (실측 확인)**
+> `playwright.config.ts:16` 이 `command: "npm run dev"` 다. 그런데 Next.js 공식 문서: *"In development, routes are rendered on-demand, so `useSearchParams` doesn't suspend and things may appear to work without `Suspense`."*
+> **즉 dev 서버로 테스트하면 결함이 재현되지 않아 테스트가 항상 통과한다.** 회귀를 전혀 못 막는다.
+> 조치: 이 케이스 전용으로 `webServer.command` 를 프로덕션 빌드로 바꾼 별도 playwright config를 두거나(`scripts/record-flexible.config.mjs` 선례 있음), 빌드 산출 HTML을 직접 검사한다.
 
 ### 구현 패턴 (T2~T4 공통) — A안 채택
 
-| 안 | 내용 | 판정 |
-|---|---|---|
-| **A** | 목록 전체를 서버 컴포넌트에서 렌더 → HTML에 전 항목. 클라이언트 필터는 서버 렌더 노드를 `children`으로 받아 표시/숨김만 | **채택** — SSG 유지, 변경 최소 |
-| B | page의 `searchParams` prop을 서버에서 읽어 필터링 | 기각 — 라우트가 동적 SSR로 전환돼 정적 캐시 상실 |
-| C | `/blog/tag/[tag]` 정적 라우트 신설 | 분리 — 색인 표면 확대 효과는 있으나 신규 설계 필요 → **G4-T3** |
+**원인 (공식 문서)**: Next.js `useSearchParams` — *"If a route is prerendered, calling `useSearchParams` will cause the Client Component tree up to the closest Suspense boundary to be client-side rendered."* + *"This component passed as a fallback to the Suspense boundary **will be rendered in place of** the search bar in the initial HTML."*
 
-**원인 (공식 문서)**: Next.js `useSearchParams` — "If a route is prerendered, calling `useSearchParams` will cause the Client Component tree up to the closest Suspense boundary to be client-side rendered." + fallback이 초기 HTML에 대신 들어감. 즉 버그가 아니라 설계된 동작이고, fallback을 `null`로 둔 게 원인.
+즉 **버그가 아니라 설계된 동작**이고, 우리가 `fallback`을 `null`로 둔 게 원인이다. 문서가 의도한 사용법은 fallback에 실물을 넣는 것이다.
+
+### 확정 방식 (2026-07-27, 실제 코드 확인 후)
+
+```tsx
+// src/app/blog/page.tsx:74  — 3개 라우트 동일 패턴
+<Suspense fallback={null}>              →  <Suspense fallback={<StaticPostList posts={posts} />}>
+  <TagFilter posts={posts} />                <TagFilter posts={posts} />
+</Suspense>                                </Suspense>
+```
+
+**핵심 근거**: `TagFilter`는 **이미 `posts`를 서버에서 prop으로 받고 있다**(`TagFilter.tsx:9,20`). 데이터를 클라이언트로 어떻게 넘길지는 애초에 문제가 아니었다. CSR로 빠지는 원인은 오직 `useSearchParams()` 하나다.
+
+| 이 방식이 이긴 이유 | |
+|---|---|
+| `TagFilter.tsx` **무변경** | 회귀 위험 0. URL 동기화·뒤로가기·검색어 동작 전부 그대로 |
+| 신규 파일 | 서버 컴포넌트 1개(`StaticPostList` 등)만. 기존 `BlogRowCard`·`ProjectCard` 재사용 |
+| 변경량 | 각 page.tsx 1줄 |
+
+**⚠️ fallback에 툴바 스켈레톤도 포함할 것.** 목록만 넣으면 하이드레이션 시 검색창·태그칩이 위에서 삽입되며 CLS가 발생한다. 동일 높이의 자리를 fallback에도 확보한다.
+
+**기각한 대안**
+
+| 안 | 기각 사유 |
+|---|---|
+| page의 `searchParams` prop을 서버에서 읽어 필터링 | 라우트가 동적 SSR로 전환돼 정적 캐시 상실 |
+| `useSearchParams` 제거 → `useState` + `popstate` 동기화 | `TagFilter` 내부를 뜯어야 함. 위 방식이 같은 결과를 무변경으로 달성 |
+| `/blog/tag/[tag]` 정적 라우트 신설 | 기각 아님 — 색인 표면 확대 효과가 별도로 있어 **G4-T3으로 분리** |
+
+### 알려진 트레이드오프 — 필터 플래시 (수용)
+
+`?tag=x` 상태에서 **새로고침하거나 URL을 붙여넣으면** 전체 목록이 잠깐 보였다가 필터링된다. 서버는 쿼리를 모르므로 원리상 회피 불가.
+
+**수용 근거**: 태그 칩이 `<a>`가 아니라 `<button>` + `router.replace`다(`TagFilter.tsx:130-146`). 즉 `?tag=x` URL은 **내부 SPA 전환으로만 생성**되며, 그 시점엔 JS가 이미 로드돼 있어 플래시가 없다. 외부로 링크가 샐 일도, 검색엔진이 그 URL을 알 일도 없다.
+
+회피하려면 `theme-init`(`layout.tsx:164`)처럼 `beforeInteractive` 인라인 스크립트로 페인트 전에 클래스를 심는 패턴이 있으나 **과잉**으로 판단해 채택하지 않는다.
 
 ---
 
@@ -124,13 +162,19 @@
 |---|---|---|---|
 | **G2-T1** | **sitemap `lastmod` 정확도 개선** (D3). `BlogFrontmatter`에 `updated?: string` 선택 필드 → `/blog/<slug>` lastmod = `updated ?? date`. `/blog`·`/updates`·`/showroom` = 각 최신 항목 날짜. **나머지 9개 정적 라우트는 `lastModified` 필드 자체 제거**(빌드시각 = 거짓 신호, 무신호가 낫다). git commit time 기각 — Vercel 얕은 클론에서 비결정적 | 없음 | ① `src/lib/blog.ts` `updated?` 파싱 ② `src/app/sitemap.ts` 재설계 ③ 빌드 산출 `sitemap.xml`에 **빌드 시각 0건** ④ 기존 12개 글 무수정 동작(하위호환) ⑤ lint·build 통과 |
 | **G2-T2** | **IndexNow 키 발급 + 배포.** `--init-key` 로 32자 hex 생성 → `public/<key>.txt` → 커밋·배포(**사람 게이트**) → GH Variables 등록 | 없음 | ① `https://yohanstudio.co/<key>.txt` 200 + 본문 == 키 정확 일치 ② GH Variables `INDEXNOW_KEY` 등록 ③ 로컬 `$env:INDEXNOW_KEY` 확인 |
-| **G2-T3** | **`scripts/seo-indexnow.mjs` 엔진 + `pnpm seo:ping`.** 옵션 `--init-key`/`--dry-run`/`--all`/`--urls`/`--base --head`/`--no-wait`/`--force`. 라이브 sitemap 폴링 **15초 × 40회 = 상한 10분**, 초과 시 **제출 없이 exit 1**. 키 파일 게이트 선행. 429/5xx는 `Retry-After` 존중 백오프 2회, 400/403 즉시 중단. URL 정규화 + `Set` dedup | T2 | ① npm 의존성 0 ② `--dry-run` 후보 URL 정확 ③ **`published:false→true` 커밋 범위로 실증** ④ 틀린 키면 제출 전 exit 1 ⑤ 폴링 초과 시 수동 복구 명령 출력 ⑥ 실제 1건 제출 → **Bing WMT 제출 로그 등장** ⑦ `package.json` 스크립트 추가 |
+| **G2-T3** | **`scripts/seo-indexnow.mjs` 엔진 + `pnpm seo:ping`.** 옵션 `--init-key`/`--dry-run`/`--all`/`--urls`/`--base --head`/`--no-wait`/`--force`. 라이브 sitemap 폴링 **15초 × 40회 = 상한 10분**, 초과 시 **제출 없이 exit 1**. 키 파일 게이트 선행. 429/5xx는 `Retry-After` 존중 백오프 2회, 400/403 즉시 중단. URL 정규화 + `Set` dedup | T2 + **G5-T3** | ① npm 의존성 0 ② `--dry-run` 후보 URL 정확 ③ **`published:false→true` 커밋 범위로 실증** ④ 틀린 키면 제출 전 exit 1 ⑤ 폴링 초과 시 수동 복구 명령 출력 ⑥ 실제 1건 제출 → **Bing WMT 제출 로그 등장** ⑦ `package.json` 스크립트 추가 |
 | **G2-T4** | **GitHub Actions** `.github/workflows/seo-indexnow.yml`. `ci.yml` **무수정**. `paths`: `src/content/{blog,updates,showroom}/**`, `src/blog/posts/**`. `concurrency: cancel-in-progress: false` | T3 | ① **`actions/checkout` `fetch-depth: 0`** — 없으면 `github.event.before` 커밋이 로컬에 없어 diff가 **조용히 전부 실패** ② `before == 0000…` 폴백 존재 ③ `paths` 필터 스킵 실증 ④ 첫 실행은 `workflow_dispatch` + `dry_run: true` ⑤ 실제 글 1건으로 end-to-end 성공 ⑥ 의도적 실패 → 빨간 X + 알림 도달 |
 | **G2-T5** | **(절충) GSC URL 검사 딥링크 오프너** `pnpm seo:gsc -- <slug>` → `https://search.google.com/search-console/inspect?resource_id=<property>&id=<url>` 브라우저 open. **자동 클릭 없음** | T3 | ① 딥링크가 실제로 해당 URL 검사 화면을 여는지 **수동 실측**(형식 추정이므로 필수) ② 안 열리면 티켓 폐기 + 문서에 "구글은 GSC 수동" 명시 |
 | **G2-T6** | **문서·ADR.** `docs/adr/ADR-005-indexnow-auto-submission.md` / `docs/content/blog-publishing-system.md` "색인 자동 제출" 절 / `docs/state/vercel-env-keys.md` `INDEXNOW_KEY` 행 | T1~T5 | 3개 문서 갱신 |
 
-**의존 순서**: `T1 ∥ T2` → `T3` → `T4` → `T5 ∥ T6`
-**주의**: T1은 IndexNow와 무관하게 단독 가치가 크고(구글 대응의 전부) 회귀 위험이 가장 낮다 → 먼저 머지 권장.
+**의존 순서**: `G5-T3(Bing 등록)` ∥ `T1` ∥ `T2` → `T3` → `T4` → `T5 ∥ T6`
+
+**주의 2건**
+- **P4 (의존 누락 수정)**: T3의 DoD⑥ 이 Bing Webmaster Tools 제출 로그를 요구하는데, Bing 등록은 G5-T3다. **G5-T3를 G2-T3보다 먼저** 끝내야 한다. 등록은 무료·10분이며 G5의 나머지와 달리 G1 완료를 기다릴 필요가 없다.
+- **P3 (파일 충돌)**: T1이 `src/app/sitemap.ts` 를 거의 전 줄 고친다. **G3-T2(sitemap 라우트 추가)와 같은 파일이라 병렬 불가** — T1을 먼저 머지하고 G3-T2가 그 위에 얹혀야 한다.
+- T1은 IndexNow와 무관하게 단독 가치가 크고(구글 대응의 전부) 회귀 위험이 가장 낮다 → 프로그램 전체에서 **가장 먼저 머지** 권장.
+
+**로컬 실행 편의**: 스크립트는 셸 env(`$env:INDEXNOW_KEY`)를 읽는다. 매번 설정이 번거로우면 `scripts/seed.ts:6` 의 선례(*".env.local 자동 로드 — 수동 파싱, dotenv 의존 없음"*)를 그대로 재사용한다. 또는 `public/*.txt` 키 파일을 스캔해 자동 발견하게 해도 된다(키가 공개값이므로 안전).
 
 ### 엣지 케이스 처리표
 
@@ -169,14 +213,19 @@
 
 # G3 — 기술 SEO 정비
 
-| 티켓 | 내용 | DoD |
-|---|---|---|
-| G3-T1 | **verification 토큰 정리** (D4·D5). 죽은 하드코딩 fallback 제거 → env 없으면 태그 미렌더. naver 중복 출력 제거 | 빌드 HTML에 각 verification 태그 **정확히 1개**. env 미주입 시 0개 |
-| G3-T2 | **sitemap 누락 라우트 추가** (D6). `/learning-log/[id]`(Notion 인덱스), `/store/[id]`(Supabase `studio_products`) | sitemap URL 수가 실제 페이지 수와 일치. 각 URL 200 |
-| G3-T3 | **metadata 보강.** 404 metadata export, `/learning-log/[id]` description, `/store/[id]` canonical·twitter | 전 라우트 title·description 존재를 스크립트로 전수 확인 |
-| G3-T4 | **OG alt 보강** 2건 + `icon.tsx`/`apple-icon.tsx`/`manifest.json` 추가 | OG 라우트 14개 전부 `alt` export. 모바일 홈 화면 아이콘 정상 |
-| G3-T5 | **`images.remotePatterns` 설정** — 현재 원격 썸네일이 `next/image` 우회 중(`BlogPostCard.tsx:131-132`) | 원격 이미지가 최적화 경로 탐. LCP로 개선 확인 |
-| G3-T6 | **BL-2 처리** — CLAUDE.md 기술스택 표기 정정 | `@vercel/og`→`next/og`, `next-sitemap` 항목 제거 |
+> ⚠️ **P2 — G1·G2와 병렬 불가 (실측 확인).** 앞서 "G1과 병렬 가능"이라 적었던 건 틀렸다.
+> - `layout.tsx` 의 canonical(`:139`)과 verification(`:142`) 이 **4줄 차이 = 같은 git hunk** → **G3-T1은 G1-T1 머지 후**에 착수한다.
+> - `sitemap.ts` 를 **G2-T1(lastmod 전면 재설계)** 과 **G3-T2(라우트 추가)** 가 함께 만진다 → **G3-T2는 G2-T1 머지 후**.
+> - 나머지 티켓(T3~T6)은 파일이 겹치지 않아 자유.
+
+| 티켓 | 내용 | 선행 | DoD |
+|---|---|---|---|
+| G3-T1 | **verification 토큰 정리** (D4·D5). 죽은 하드코딩 fallback 제거 → env 없으면 태그 미렌더. naver 중복 출력 제거 | **G1-T1** | 빌드 HTML에 각 verification 태그 **정확히 1개**. env 미주입 시 0개. ※ 소유확인은 `public/google*.html`·`public/naver*.html` 파일 방식이 2중으로 걸려 있어 env 누락 시에도 소유권은 유지된다 |
+| G3-T2 | **sitemap 누락 라우트 추가** (D6). `/learning-log/[id]`(Notion 인덱스), `/store/[id]`(Supabase `studio_products`) | **G2-T1** | sitemap URL 수가 실제 페이지 수와 일치. 각 URL 200 |
+| G3-T3 | **metadata 보강.** 404 metadata export, `/learning-log/[id]` description, `/store/[id]` canonical·twitter | 없음 | 전 라우트 title·description 존재를 스크립트로 전수 확인 |
+| G3-T4 | **OG alt 보강** 2건 + `icon.tsx`/`apple-icon.tsx`/`manifest.json` 추가 | 없음 | OG 라우트 14개 전부 `alt` export. 모바일 홈 화면 아이콘 정상 |
+| G3-T5 | **`images.remotePatterns` 설정** — 현재 원격 썸네일이 `next/image` 우회 중(`BlogPostCard.tsx:131-132`) | 없음 | 원격 이미지가 최적화 경로 탐. LCP로 개선 확인 |
+| G3-T6 | **BL-2 처리** — CLAUDE.md 기술스택 표기 정정 | 없음 | `@vercel/og`→`next/og`, `next-sitemap` 항목 제거 |
 
 ---
 
@@ -192,14 +241,27 @@
 
 # G5 — 검색엔진 등록·계측 (사람 작업 중심)
 
-> 코드 변경 거의 없음. **G1 완료 후** 실행해야 의미가 있다(백지 페이지를 등록해봐야 소용없음).
+> 코드 변경 거의 없음. **단 T1·T3은 G1보다 먼저** 해야 한다 — 아래 P5 참조.
 
-| 티켓 | 내용 | DoD |
-|---|---|---|
-| G5-T1 | **GSC 점검.** 속성 유형(도메인 vs URL 접두어), sitemap 제출 상태, 색인 커버리지에서 3장 상태 — G1 전후 비교용 베이스라인 | `docs/seo/baseline-YYYY-MM-DD.md` 에 수치 기록 |
-| G5-T2 | **네이버 서치어드바이저 점검.** 등록·소유확인 상태, **RSS(`/rss.xml`) 제출**, 사이트맵 제출, 사이트 최적화 진단 실행 | 진단 통과/실패 목록 기록. 실패 항목은 G3에 티켓 추가 |
-| G5-T3 | **Bing Webmaster Tools 등록** — 무료, IndexNow 제출 로그 확인 창구(G2 검증에 필수). GSC에서 임포트 가능 | 등록 + 소유확인 + IndexNow 로그 화면 접근 확인 |
-| G5-T4 | **(선택) 주간 계측.** GSC Search Analytics API(`webmasters.readonly`) 로 노출·클릭·평균순위 주간 스냅샷 | 4주 연속 수집 성공 |
+| 티켓 | 내용 | 시점 | DoD |
+|---|---|---|---|
+| **G5-T1** | **GSC 베이스라인.** 속성 유형(도메인 vs URL 접두어), sitemap 제출 상태, 색인 커버리지에서 3장 상태 + **검색어 리포트**(어떤 질의로 노출되는지, 노출·클릭·평균순위) | **G1 착수 전 ★** | `docs/seo/baseline-YYYY-MM-DD.md` 에 수치 기록. **검색어 상위 30개 포함**(H1 결정의 입력값) |
+| **G5-T3** | **Bing Webmaster Tools 등록** — 무료·10분. IndexNow 제출 로그 확인 창구 | **G2-T3 전 ★** | 등록 + 소유확인 + IndexNow 로그 화면 접근 확인 |
+| G5-T2 | **네이버 서치어드바이저 점검.** 등록·소유확인 상태, **RSS(`/rss.xml`) 제출**, 사이트맵 제출, 사이트 최적화 진단 실행 | G1 후 | 진단 통과/실패 목록 기록. 실패 항목은 G3에 티켓 추가 |
+| **G5-T5** | **Vercel Speed Insights 설치** (H2). `@vercel/speed-insights` 현재 **미설치** — 실사용자 CWV(LCP/INP/CLS) 필드 데이터가 하나도 없다 | 아무 때나 | 패키지 설치 + `layout.tsx` 마운트. 2주 후 대시보드에 필드 데이터 존재 확인 |
+| **G5-T6** | **초기 JS 감량** (H2). 실측 **334 KB(압축 후)** — Next.js 기본 90~100KB 대비 3배 이상. 번들 분석 후 감량 | **⚠️ 요한 결정 대기** | ① `@next/bundle-analyzer` 로 상위 기여자 특정 ② 감량 목표치 합의 ③ 목표 달성 · Lighthouse 성능 점수 개선 확인 |
+| G5-T4 | **(선택) 주간 계측 자동화.** GSC Search Analytics API(`webmasters.readonly`) 로 노출·클릭·평균순위 주간 스냅샷 | G5-T1 후 | 4주 연속 수집 성공 |
+
+> **P5 — 순서 수정 (계획 결함)**
+> 원안은 G5 전체를 G1 뒤에 뒀는데, 그러면 **개선 후에 베이스라인을 재는 셈**이라 before/after 비교가 불가능해진다. `G5-T1`은 **G1 착수 전**에 떠야 한다. `G5-T3`(Bing)도 G2-T3의 검증 전제라 앞으로 당긴다. 나머지(T2)만 G1 뒤가 맞다.
+
+> **G5-T6 — 요한 결정 대기 (착수 금지)**
+> 초기 JS 334KB의 유력 기여자가 **AI 챗봇·TTS·Sentry**인데, 셋 다 이미 출시된 기능이다. 감량은 곧 이들을 더 늦게 로드하거나 축소한다는 뜻이라 **"성능 vs 기능" 트레이드오프**다. 어디까지 깎을지는 사람이 정한다.
+> 참고 실측(2026-07-27, 라이브): 홈 `초기 JS 334KB / script 11개 / HTML 189KB`, 블로그 글 `332KB / 11개 / 54KB`. PageSpeed Insights API는 공유 IP 쿼터 초과(429)로 측정 실패 → **G5-T5 설치 후 필드 데이터로 대체 측정**.
+
+> **H1 — 콘텐츠 전략은 지금 결정하지 않는다**
+> SEO는 `기술(발견 가능성) × 콘텐츠(검색 수요)` 인데 이 프로그램은 100% 기술이다. 현재 글 12편이 어떤 검색어를 노리는지 정의가 없다.
+> 다만 **추측으로 짜면 안 된다** — GSC에 이미 실제 노출 검색어 데이터가 쌓여 있다. `G5-T1` 에서 검색어 리포트를 확보한 뒤 **G8(콘텐츠 전략) 신설 여부를 결정**한다. 그때까지 보류.
 
 ---
 
@@ -235,24 +297,37 @@
 # 의존 그래프 · 권장 순서
 
 ```
-G0 자산화 (완료)
- ├─ G1 크롤가능성 ★ ──┬─→ G5 등록·계측   (G1 후에 해야 의미)
- │   T1 canonical      ├─→ G6 AEO        (G1이 실질 AEO 본체)
- │   → T2 updates      └─→ G4 구조화데이터·내부링크
- │   → T3 blog
- │   → T4 showroom
- │   → T5 회귀테스트
- ├─ G2 색인자동화 ★   (G1과 병렬 가능. T1 lastmod는 지금 착수해도 무해)
- ├─ G3 기술SEO정비     (G1과 병렬 가능)
- └─ G7 수익화          (T1 확인 게이트 → 나머지)
+[0] 선행 측정·등록 — 코드 0
+     G5-T1 GSC 베이스라인 + 검색어 리포트   ← G1 전에 반드시
+     G5-T3 Bing 등록                        ← G2-T3 전에 반드시
+        │
+[1] ├─ G1 크롤가능성 ★
+    │    T1 canonical → T2 updates → T3 blog → T4 showroom → T5 회귀테스트
+    │       │
+    │       ├─→ G3-T1 verification   (layout.tsx 같은 hunk — 병렬 불가)
+    │       ├─→ G5-T2 네이버 점검
+    │       ├─→ G6 AEO               (G1이 실질 AEO 본체)
+    │       └─→ G4 구조화데이터·내부링크
+    │
+[1] ├─ G2 색인자동화 ★   (G1과 병렬 가능)
+    │    T1 lastmod ─→ G3-T2 sitemap 라우트 추가 (sitemap.ts 같은 파일 — 병렬 불가)
+    │    T2 키 → T3 엔진 → T4 워크플로 → T5·T6
+    │
+[2] ├─ G3 나머지(T3~T6)  (파일 안 겹침, 자유)
+    ├─ G5-T5 Speed Insights (아무 때나)
+    │
+[?] ├─ G5-T6 JS 감량      ⚠️ 요한 결정 대기
+    ├─ G8 콘텐츠 전략     ⚠️ G5-T1 데이터 확인 후 신설 여부 결정
+    └─ G7 수익화          (T1 확인 게이트 → 나머지)
 ```
 
 | 순위 | Goal | 이유 |
 |---|---|---|
+| 0 | **G5-T1 · G5-T3** | 코드 0. 베이스라인은 **개선 전에** 떠야 비교가 되고, Bing은 G2 검증의 전제 |
 | 1 | **G1** | canonical 오염 + 백지 목록. 나머지 전부의 전제 |
-| 2 | **G2** | 최대 통증(수동·망각) 해결. T1은 G1과 병렬 착수 가능 |
-| 3 | **G3** | 저비용·확실. 죽은 토큰 등 실사고 위험 제거 |
-| 4 | **G5** | G1 후 베이스라인 측정. 여기서 문제가 더 드러날 수 있음 |
+| 2 | **G2** | 최대 통증(수동·망각) 해결. G1과 병렬 가능. **T1(lastmod)이 전 프로그램에서 가장 먼저 머지할 후보** — 단독 가치 크고 회귀 위험 최저 |
+| 3 | **G3** | 저비용·확실. 죽은 토큰 등 실사고 위험 제거. 단 T1·T2는 선행 대기 |
+| 4 | **G5 나머지** | 네이버 진단·Speed Insights |
 | 5 | **G4** | 색인 표면·내부링크 확대 |
 | 6 | **G6** | G1이 사실상 AEO 본체. 나머지는 계측·규율 |
 | 7 | **G7** | 확인 게이트 + 콘텐츠 볼륨 필요 |
@@ -268,8 +343,15 @@ G0 자산화 (완료)
    curl -sL https://yohanstudio.co/blog | grep -o 'href="/blog/[a-z0-9-]*"' | sort -u | wc -l
    curl -sL https://yohanstudio.co/blog | grep -o '<link rel="canonical"[^>]*>'
    ```
-4. `docs/ssr-seo-report.html` 수치 갱신 (문서 자기모순 방지 — #82 재발 방지)
-5. Notion Dev Log 적재 (유형: 마일스톤 / 결과: 코드단계=부분성공 → 라이브 손검증 후 성공)
+4. **sitemap 전 URL 200 감사** — 라우트를 건드린 Goal에서 필수
+   ```
+   for u in $(curl -s https://yohanstudio.co/sitemap.xml | grep -o '<loc>[^<]*</loc>' | sed 's/<[^>]*>//g'); do
+     printf "%s %s\n" "$(curl -s -o /dev/null -w '%{http_code}' -L "$u")" "$u"
+   done | grep -v '^200' || echo "전부 정상"
+   ```
+   기준선: **2026-07-27 실측 30/30 전부 200, 비정상 0건** (H3 — 상시 티켓 불필요로 종결)
+5. `docs/ssr-seo-report.html` 수치 갱신 (문서 자기모순 방지 — #82 재발 방지)
+6. Notion Dev Log 적재 (유형: 마일스톤 / 결과: 코드단계=부분성공 → 라이브 손검증 후 성공)
 
 ---
 
@@ -284,3 +366,50 @@ G0 자산화 (완료)
 | 네이버 검색광고(파워링크) | 수익이 아니라 지출. 오디언스 0에서 비용만 발생 |
 | IndexNow 삭제 URL 자동 통보 | 규격 문언 1차 확인 실패 → 검증 안 된 동작 자동화 금지 |
 | 상태 저장소(제출 이력 DB) | 월 수 건 규모에 과잉. git diff로 자연 dedup |
+
+---
+
+# 확인했고 문제없던 것 (재조사 금지)
+
+| 항목 | 실측 | 결론 |
+|---|---|---|
+| `yohan-studio.vercel.app` 중복 색인 위험 | `HTTP/1.1 308` → `Location: https://yohanstudio.co/...`, canonical도 정상 | 리다이렉트로 정리돼 있음. 조치 불필요 |
+| sitemap 링크 무결성 | 30개 URL 전부 `200` | 현시점 깨진 링크 0 |
+| `next/image` alt 누락 | `<Image>` 8개 전부 `alt` 존재 | 접근성·SEO 이상 없음 (`BlogPostCard.tsx:125` 의 `alt=""` 는 장식용 의도) |
+
+---
+
+# 개정 이력
+
+## 2026-07-27 계획 자체 검토 — 결함 5건 수정, 공백 3건 처리, 미확정 2건 확정
+
+계획 승인 직후 **구현 전에 계획을 재감사**해서 아래를 반영했다. 구현 중에 터졌으면 훨씬 비쌌을 것들이다.
+
+### 수정한 계획 결함 (P)
+
+| ID | 결함 | 조치 |
+|---|---|---|
+| P1 | G1-T5 회귀 테스트가 dev 서버 대상 → **결함이 재현 안 돼 항상 통과**. `playwright.config.ts:16` 이 `npm run dev` 이고, Next 공식 문서상 dev에서는 `useSearchParams` 가 suspend하지 않음 | G1-T5 DoD에 "프로덕션 빌드 대상" + "일부러 되돌려 빨간불 확인" 명시 |
+| P2 | "G3는 G1과 병렬 가능"이 틀림 — `layout.tsx` canonical(`:139`)과 verification(`:142`) 이 **같은 git hunk** | G3-T1 선행 = G1-T1 |
+| P3 | G2-T1 vs G3-T2 가 `sitemap.ts` 전면 충돌 | G3-T2 선행 = G2-T1 |
+| P4 | G2-T3의 DoD가 Bing WMT를 요구하는데 등록은 G5-T3 (의존 누락) | G5-T3를 G2-T3 앞으로 |
+| P5 | 베이스라인(G5-T1)이 G1 뒤 → **개선 후에 측정**하는 셈 | G5-T1을 G1 착수 전으로 |
+
+### 처리한 공백 (H)
+
+| ID | 공백 | 결론 |
+|---|---|---|
+| H1 | 콘텐츠 전략·키워드 리서치 0 | **보류.** 추측으로 짜지 않고 G5-T1의 GSC 검색어 리포트를 본 뒤 G8 신설 여부 결정 |
+| H2 | Core Web Vitals 계측 없음 | 티켓 2개 신설 — G5-T5(Speed Insights 설치) / G5-T6(JS 감량, **요한 결정 대기**). 실측 근거: 초기 JS **334KB** |
+| H3 | 링크 감사 없음 | **종결.** 30/30 정상. 상시 티켓 대신 공통 검증 게이트 4번으로 흡수 |
+
+### 확정한 미확정 (S)
+
+| ID | 항목 | 결론 |
+|---|---|---|
+| S1 | G1 구현 방식 3갈래 | **1줄로 확정** — `Suspense fallback` 에 실물 목록 + 툴바 스켈레톤. 스파이크 불필요. `TagFilter` 가 이미 `posts` 를 prop으로 받고 있어(`TagFilter.tsx:9,20`) 고민의 전제 자체가 없었음 |
+| S2 | 필터 플래시 | **수용.** 태그 칩이 `<button>` + `router.replace` 라 `?tag=` URL이 내부 SPA 전환으로만 생기고 외부로 새지 않음. 새로고침·URL 붙여넣기에서만 발생 |
+
+### 교훈
+
+> 계획 단계에서 **실제 코드를 읽지 않고 추상적으로 설계**하면 존재하지 않는 문제를 풀게 된다. S1이 3갈래 → 1줄로 줄어든 원인이 정확히 그것이다. 다음부터 구현 방식을 못 박기 전에 대상 컴포넌트를 먼저 읽는다.
