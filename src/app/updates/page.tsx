@@ -3,6 +3,7 @@ import type { CSSProperties } from "react"
 import { Suspense } from "react"
 import Link from "next/link"
 import { UpdatesFeed } from "@/components/updates/UpdatesFeed"
+import { StaticUpdatesList } from "@/components/updates/StaticUpdatesList"
 import { getCompiledUpdates } from "@/lib/updates"
 import { BreadcrumbJsonLd } from "@/components/seo/BreadcrumbJsonLd"
 
@@ -80,7 +81,7 @@ export default async function UpdatesPage() {
             제품이 살아있다는 증거. 모든 릴리즈의 변경 사항을 버전 단위로 기록합니다.
           </p>
         </header>
-        <Suspense fallback={null}>
+        <Suspense fallback={<StaticUpdatesList entries={entries} />}>
           <UpdatesFeed entries={entries} />
         </Suspense>
       </div>
