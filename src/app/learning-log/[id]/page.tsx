@@ -22,7 +22,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${page.title} — 러닝 로그`,
     description,
     // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
-    alternates: { canonical: `/learning-log/${id}` },
+    // alternates는 병합이 아니라 통째로 덮어써지므로 RSS alternate도 여기서 다시 명시한다.
+    alternates: {
+      canonical: `/learning-log/${id}`,
+      types: { "application/rss+xml": "/rss.xml" },
+    },
     openGraph: {
       type: "article",
       title: page.title,

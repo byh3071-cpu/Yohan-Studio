@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   title: "업데이트",
   description: "SnapContext·VHK 제품 릴리즈 노트 — 모든 버전의 변경 사항을 기록합니다.",
   // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
-  alternates: { canonical: "/updates" },
+  // alternates는 병합이 아니라 통째로 덮어써지므로 RSS alternate도 여기서 다시 명시한다.
+  alternates: {
+    canonical: "/updates",
+    types: { "application/rss+xml": "/rss.xml" },
+  },
 }
 
 export default async function UpdatesPage() {

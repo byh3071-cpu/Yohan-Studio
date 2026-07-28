@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description:
     "AI 시대 1인 기업가의 실험·운영체계·바이브코딩 결과물 쇼룸. Notion OS, GAS 자동화, AI 워크플로우, 위젯, 빌드로그.",
   // 자체 canonical이 없으면 루트 layout의 "/"를 상속해 홈의 사본으로 선언된다.
-  alternates: { canonical: "/showroom" },
+  // alternates는 병합이 아니라 통째로 덮어써지므로 RSS alternate도 여기서 다시 명시한다.
+  alternates: {
+    canonical: "/showroom",
+    types: { "application/rss+xml": "/rss.xml" },
+  },
 }
 
 const section: CSSProperties = {
