@@ -116,6 +116,29 @@ for (const [file, path] of canonical) {
   else fail.push(`canonical ${path || "/"}: ${m[1]} (기대 ${want} — 루트 상속 의심)`)
 }
 
+// ── 3) vercel.app → 정식 도메인 308 리디렉트가 살아있는가 ──────────
+// yohan-studio.vercel.app 은 Vercel 자동 발급 도메인이다. 리디렉트가 풀리면
+// 같은 사이트가 두 주소로 이중 서빙돼 중복 콘텐츠가 된다. GSC 의 해당 속성은
+// 알림을 꺼둔 상태라(영구 "리디렉션됨" 노이즈) 이 검사가 유일한 감시자다.
+// 라이브 네트워크 호출이므로: 리디렉트 실종(2xx 직접 응답)만 fail,
+// 네트워크 오류·타임아웃은 경고로 강등한다(오프라인 로컬 실행 보호).
+{
+  const legacy = "https://yohan-studio.vercel.app/"
+  try {
+    const res = await fetch(legacy, { method: "HEAD", redirect: "manual", signal: AbortSignal.timeout(10_000) })
+    const loc = res.headers.get("location") ?? ""
+    if (res.status >= 300 && res.status < 400 && loc.startsWith(base)) {
+      pass.push(`vercel.app 리디렉트: ${res.status} → ${loc}`)
+    } else if (res.status >= 200 && res.status < 300) {
+      fail.push(`vercel.app 리디렉트 실종: ${res.status} 직접 응답 — 이중 서빙(중복 콘텐츠) 상태`)
+    } else {
+      console.warn(`  ⚠ vercel.app 리디렉트 판정 불가: ${res.status} Location=${loc || "(없음)"}`)
+    }
+  } catch (e) {
+    console.warn(`  ⚠ vercel.app 리디렉트 검사 생략(네트워크): ${e.message}`)
+  }
+}
+
 // ── 결과 ────────────────────────────────────────────────────────
 for (const p of pass) console.log(`  ✓ ${p}`)
 if (fail.length === 0) {
