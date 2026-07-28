@@ -1,5 +1,14 @@
 import type { CSSProperties } from "react"
+import type { Metadata } from "next"
 import Link from "next/link"
+
+// 404는 자기 URL이 없다. metadata를 선언하지 않으면 루트 layout의 canonical("/")을
+// 상속해 "이 404는 홈의 사본"이라고 선언하게 되므로 alternates를 비워 상속을 끊는다.
+export const metadata: Metadata = {
+  title: "404 — 페이지를 찾을 수 없습니다",
+  description: "주소가 바뀌었거나 삭제된 페이지다.",
+  alternates: {},
+}
 
 const section: CSSProperties = {
   background: "var(--bg)",
