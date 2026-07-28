@@ -57,6 +57,24 @@ docs/content/naver/vhk-npm-cli-launch.txt
 5. 마지막 해시태그 5~8개를 등록한다.
 6. 발행 후 네이버 URL을 웹 글이나 Dev Log에 기록한다.
 
+## 색인 자동 제출 (2026-07-28 가동 — ADR-005)
+
+**사람이 할 일: 0개.** 콘텐츠(.mdx)가 master 에 머지되면 GitHub Actions(`seo-indexnow.yml`)가:
+
+1. 변경 URL 산출 (git diff → blog/updates/showroom 매핑)
+2. 라이브 sitemap 폴링(최대 10분)으로 배포 반영 확인 — `published: true` 전환도 여기서 자동 감지
+3. IndexNow 배치 제출 → **Bing·네이버·Yandex 등 전 참여 엔진에 공유**
+
+구글은 IndexNow 미참여 — sitemap `lastmod`(발행일/`updated` 필드)가 담당한다. 글을 **수정**했으면 frontmatter 에 `updated: "YYYY-MM-DD"` 를 넣어야 구글이 재크롤 신호를 받는다.
+
+실패 시(Actions 빨간 X) 수동 복구:
+
+```
+npm run seo:ping -- --urls https://yohanstudio.co/blog/<slug>
+```
+
+제출 확인 창구: **Bing Webmaster Tools → IndexNow 로그** (네이버는 받기만 하고 로그를 안 보여줌).
+
 ## 품질 기준
 
 - 결과가 첫 5줄 안에 나온다.

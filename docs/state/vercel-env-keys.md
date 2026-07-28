@@ -28,4 +28,10 @@ PR 본문·대시보드 설정용. 값은 Vercel Settings → Environment Variab
 
 **미사용:** `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` — 서버 Checkout Session 패턴.
 
+**Vercel 미등록 (다른 곳에 사는 키):**
+
+| Key | 위치 | 비고 |
+| --- | --- | --- |
+| `INDEXNOW_KEY` | **GitHub Actions Variables** (Secrets 아님) | IndexNow 색인 자동 제출(ADR-005). 키는 `/<key>.txt` 로 공개 호스팅되는 값이라 시크릿이 아니다. Vercel 에는 등록하지 않는다 — 런타임이 아니라 CI 만 쓴다 |
+
 등록 후 **Redeploy** 필수.

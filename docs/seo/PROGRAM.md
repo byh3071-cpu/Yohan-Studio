@@ -10,6 +10,8 @@
 | G5-T1 GSC 베이스라인 | ✅ | — |
 | G5-T3 Bing WMT 등록 | ✅ | — |
 | G1-T5 회귀 가드 + CI 배선 | ✅ | #94 |
+| **G2-T2·T3·T4 IndexNow 엔진·키·워크플로** | ✅ | #97 — 첫 제출 HTTP 202 실측 |
+| G2-T6 문서·ADR-005 | ✅ | — |
 | G2-T1 sitemap lastmod | ✅ | #87 |
 | G1-T1a canonical 추가 | ✅ | #88 |
 | G1-T2 `/updates` CSR | ✅ | #89 |
