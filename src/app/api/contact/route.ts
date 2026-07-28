@@ -3,8 +3,22 @@ import * as Sentry from '@sentry/nextjs';
 
 import { getSupabaseServer } from '@/lib/supabase-server';
 import { getResend, NOTIFY_TO, RESEND_FROM } from '@/lib/resend';
+import { createRateLimiter, getClientKey } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
+
+/**
+ * 문의 요청 1건이 DB 행 + 메일 발송을 만든다. 상한이 없으면 스크립트 하나로
+ * 메일 쿼터를 소진시키고 인박스를 덮을 수 있다 — 그러면 정상 문의 알림도 끊긴다.
+ * 사람이 10분에 5번 넘게 문의를 보낼 일은 없으므로 창을 넓게, 횟수를 낮게 잡는다.
+ */
+const RATE_LIMIT_WINDOW_MS = 10 * 60_000;
+const RATE_LIMIT_MAX = 5;
+
+const limiter = createRateLimiter({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
+});
 
 type Body = {
   name?: string;
@@ -40,6 +54,14 @@ function isValidEmail(value: string): boolean {
 }
 
 export async function POST(req: Request) {
+  // 본문 파싱보다 앞에서 끊는다 — 초과 요청이 JSON 파싱·DB·메일에 도달하지 않게.
+  if (!limiter.check(getClientKey(req))) {
+    return NextResponse.json(
+      { ok: false, error: '요청이 너무 잦습니다. 잠시 후 다시 시도해주세요.' },
+      { status: 429, headers: { 'retry-after': String(RATE_LIMIT_WINDOW_MS / 1000) } },
+    );
+  }
+
   let body: Body;
   try {
     body = (await req.json()) as Body;
