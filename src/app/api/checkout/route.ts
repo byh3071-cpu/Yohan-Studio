@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import * as Sentry from '@sentry/nextjs'
 
+import { STORE_PAUSED_NOTICE, STORE_SALES_ENABLED } from '@/data/storeConfig'
 import { getSiteUrl } from '@/lib/siteUrl'
 import { getStripe } from '@/lib/stripe'
 import { getSupabaseServer } from '@/lib/supabase-server'
@@ -11,6 +12,13 @@ export const dynamic = 'force-dynamic'
 type Body = { productId?: string }
 
 export async function POST(req: NextRequest) {
+  // 판매 중지 킬스위치는 서버에서도 강제한다. UI(CheckoutButton 등)에만 두면
+  // 이 라우트를 직접 호출하는 것만으로 우회되고, 가격·전달물이 확정되지 않은
+  // 상품에 실결제가 성립한다. 모든 외부 호출(Supabase·Stripe)보다 앞에서 끊는다.
+  if (!STORE_SALES_ENABLED) {
+    return NextResponse.json({ error: STORE_PAUSED_NOTICE }, { status: 409 })
+  }
+
   let body: Body
   try {
     body = (await req.json()) as Body
