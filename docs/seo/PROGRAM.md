@@ -1,7 +1,32 @@
 # 검색 노출 프로그램 — Goal 7개 / 티켓 30개
 
-작성 2026-07-27 · 개정 2026-07-27(계획 재감사) · 개정 2026-07-28(**필드 데이터 반영 — 우선순위 재조정**) · 상태: 계획 확정, 코드 미착수
-관련: `docs/ssr-seo-report.html` (조사 근거) · `docs/seo/baseline-2026-07-28.md` (**GSC 실측**) · `docs/backlog.md`
+작성 2026-07-27 · 개정 2026-07-27(계획 재감사) · 개정 2026-07-28(필드 데이터 반영 → **1차 구현 완료**)
+관련: `docs/ssr-seo-report.html` (조사 근거) · `docs/seo/baseline-2026-07-28.md` (**GSC 실측**) · `docs/audits/overnight-2026-07-28.md` (무인 루프 결과) · `docs/backlog.md`
+
+## 완료 현황 (2026-07-28)
+
+| 티켓 | 상태 | PR |
+|---|---|---|
+| G5-T1 GSC 베이스라인 | ✅ | — |
+| G2-T1 sitemap lastmod | ✅ | #87 |
+| G1-T1a canonical 추가 | ✅ | #88 |
+| G1-T2 `/updates` CSR | ✅ | #89 |
+| G1-T3 `/blog` CSR | ✅ | #90 |
+| G1-T4 `/showroom` CSR | ✅ | #91 |
+| G3-T7 404 정리 | ✅ | — |
+| 스토어 킬스위치(밤 발굴 #1) | ✅ | #92 |
+
+**라이브 실측 (머지 후)**
+
+| 항목 | 이전 | 현재 |
+|---|---|---|
+| `/blog` 글 링크 | 0 | **11건** |
+| `/updates` 버전 | 0 | **4종** |
+| `/showroom` 링크 | 1 | **8건** |
+| `/blog`·`/updates`·`/showroom` canonical | 전부 홈 | **각자 자기 URL** |
+| sitemap `<loc>` | 30 | 31 |
+
+**다음 1순위: G1-T5 회귀 테스트.** 위 3장이 되돌아가도 지금은 아무도 못 잡는다 — `playwright.config.ts:16` 이 dev 서버라 결함이 재현되지 않는다.
 
 **열린 결정 1건** — `G5-T6` (초기 JS 334KB 감량 범위, 성능 vs 기능)
 
@@ -43,7 +68,7 @@
 | D1 | **canonical 전역 오염** — 루트 `alternates.canonical: "/"` 가 하위 상속 → 3장이 `href="https://yohanstudio.co"` 로 자기정규화 상실 | `src/app/layout.tsx:138`, `.next/server/app/{blog,updates,showroom}.html` | **상** ↓ | G1-T1a·T1b |
 | D2 | 목록 3장이 초기 HTML에 0건 (CSR 폴백) | `blog/page.tsx:74-76`→`TagFilter.tsx:23` / `updates/page.tsx:83-85`→`UpdatesFeed.tsx:29` / `showroom/page.tsx:103-105`→`ProjectGrid.tsx:36`. 라이브 curl 0/0/1 | **높음** ↑ | G1-T2~T4 |
 | **D13** | **비브랜드 검색어 0개.** 3개월 클릭 0 · 노출 39 · 검색어 2개가 전부 브랜드명 | GSC 실데이터 (`docs/seo/baseline-2026-07-28.md`) | **최상** | **G8 (신설)** |
-| D14 | 404 3건 — `/blog/[slug]`(발생원 특정) · `/&` · `/$` | GSC + `src/content/blog/vibe-coding-2hr-deploy.mdx:79` | 낮 | G3-T7 |
+| D14 | 404 3건 — `/blog/[slug]`(우리 콘텐츠, 조치 완료) · `/$`·`/&`(**React Suspense 경계 마커 = 영구 오탐**) | GSC + `src/content/blog/vibe-coding-2hr-deploy.mdx:79` + 라이브 `<!--$-->` 실측 | 낮 | G3-T7 ✅ |
 | D15 | OG 이미지 라우트 10개 + favicon 이 "크롤링됨-미색인"으로 리포트 오염 | GSC 미색인 11건 전수 확인 | 낮 | G3-T8 |
 | D3 | sitemap `lastmod` 신뢰도 파괴 — 정적 라우트 **12곳이 `new Date()`(빌드시각)**, 글은 `post.date` 고정 | `src/app/sitemap.ts:12`, `:27,33,39,45,51,57,63,69,75,81,87,93` | 높음 | G2-T1 |
 | D4 | verification 토큰 하드코딩 fallback이 **죽은 값** — 빌드 실제값과 불일치. env 없는 환경에서 오토큰 노출 | `layout.tsx:50-56` vs `.next/server/app/index.html` | 중 | G3-T1 |
@@ -246,7 +271,7 @@ GSC 미색인 17건을 전수 확인한 결과:
 | G3-T4 | **OG alt 보강** 2건 + `icon.tsx`/`apple-icon.tsx`/`manifest.json` 추가 | 없음 | OG 라우트 14개 전부 `alt` export. 모바일 홈 화면 아이콘 정상 |
 | G3-T5 | **`images.remotePatterns` 설정** — 현재 원격 썸네일이 `next/image` 우회 중(`BlogPostCard.tsx:131-132`) | 없음 | 원격 이미지가 최적화 경로 탐. LCP로 개선 확인 |
 | G3-T6 | **BL-2 처리** — CLAUDE.md 기술스택 표기 정정 | 없음 | `@vercel/og`→`next/og`, `next-sitemap` 항목 제거 |
-| G3-T7 | **404 정리** (D14, **저우선**). `src/content/blog/vibe-coding-2hr-deploy.mdx:79` 의 본문 텍스트 `` `/blog/[slug]` `` 가 구글에 URL로 인식돼 크롤됨 → 선행 슬래시 제거 등으로 문구만 조정. `/&`·`/$` 는 라이브 30페이지 전수 스캔에서 발생원 0건 → **조치 불필요** | 없음 | GSC 404가 3 → 1~2로 감소(2~4주 후). ※ **404는 구글 공식상 순위에 무해** — 리포트 청소 목적일 뿐이니 우선순위를 올리지 말 것 |
+| ~~G3-T7~~ | ~~**404 정리** (D14)~~ | — | **✅ 완료 2026-07-28.** `vibe-coding-2hr-deploy.mdx:79` 의 `` `/blog/[slug]` `` → `` `blog/[slug]` ``(선행 슬래시 제거). `/$`·`/&` 는 **React Suspense 경계 주석 마커**로 확정 — 우리 링크가 아니고 Next.js 를 쓰는 한 없앨 수 없다. **영구 오탐이니 재조사 금지**(근거: `baseline-2026-07-28.md` §B). GSC 404 는 2 밑으로 안 내려간다 |
 | G3-T8 | **OG 라우트 색인 노이즈 제거** (D15, **저우선·선택**). `opengraph-image` 라우트 10개 + `favicon.ico` 가 "크롤링됨-미색인" 11건으로 잡혀 GSC 리포트를 채우고 있다. `next.config.ts` `headers()` 로 `**/opengraph-image` 에 `X-Robots-Tag: noindex` | 없음 | GSC 크롤링됨-미색인 11 → 0 (2~4주 후). **기능상 문제는 전혀 없으므로 리포트 가독성만이 이득** |
 
 ---
@@ -422,10 +447,42 @@ GSC 미색인 17건을 전수 확인한 결과:
 | `yohan-studio.vercel.app` 중복 색인 위험 | `HTTP/1.1 308` → `Location: https://yohanstudio.co/...`, canonical도 정상 | 리다이렉트로 정리돼 있음. 조치 불필요 |
 | sitemap 링크 무결성 | 30개 URL 전부 `200` | 현시점 깨진 링크 0 |
 | `next/image` alt 누락 | `<Image>` 8개 전부 `alt` 존재 | 접근성·SEO 이상 없음 (`BlogPostCard.tsx:125` 의 `alt=""` 는 장식용 의도) |
+| **GSC 404 의 `/$` · `/&`** | 라이브 전 페이지에 `<!--$-->`·`<!--/$-->` 주석 존재. JS 청크에 `"/$"`·`"/&"` 가 같은 조건문에 존재 | **React Suspense 경계 마커.** 구글 URL 추출기가 상대 경로로 오인한 영구 오탐. Next.js App Router + Suspense 를 쓰는 한 못 없앤다. **재조사 금지** |
 
 ---
 
 # 개정 이력
+
+## 2026-07-28 (밤) 1차 구현 완료 · GSC 404 근본원인 확정
+
+무인 결함루프(`docs/audits/overnight-2026-07-28.md`)로 티켓 5건을 구현하고, 사람 검토 후 PR 8건을 순서대로 머지했다. 라이브 실측은 상단 "완료 현황" 참조.
+
+### 사람 검토에서 잡은 것 2건
+
+| # | 내용 |
+|---|---|
+| 1 | **#88 이 스스로 만든 회귀** — `alternates` 는 병합이 아니라 통째로 덮어써지는데, `/` 와 `/blog` 에만 RSS `types` 를 재선언하고 나머지 4곳(`/updates`·`/showroom`·`/learning-log/[id]`·`/store/[id]`)은 빠뜨려 RSS alternate 가 소실됐다. 머지 전에 패치(`711bcc6`) |
+| 2 | **PR 제목 2건 깨짐** — `gh pr create --title "/blog ..."` 처럼 `/` 로 시작하는 인자를 Git Bash MSYS 가 `C:/Program Files/Git/blog` 로 치환. 엔진의 재발 가능한 함정 |
+
+내가 지적했다가 **틀린 것 1건**: `/store/[id]` 의 `canonical: /store/${product.slug}` 에 널 가드가 없다고 했으나, `slug` 는 DB 에서 `text unique not null`(`001_studio_initial.sql:12`)이라 안전하다. 에이전트 코드가 맞았다.
+
+### 머지 순서 전략이 통했다
+
+`#88`(canonical, 7파일)이 `#89`·`#90`·`#91` 과 파일 3개를 공유해서 **#88을 마지막에** 뒀다. 셋을 먼저 머지한 뒤에도 #88 은 `MERGEABLE/CLEAN` — rebase 0회. 반대 순서였으면 3번 rebase 했을 것.
+
+### GSC 404 근본원인 — `/$`·`/&` 는 React 내부 구조물
+
+"새로운 이유로 색인 생성 안 됨" 알림을 추적한 결과, 3건 중 2건이 **우리 링크가 아니었다.** React 가 스트리밍 SSR 에서 Suspense 경계를 HTML 주석(`<!--$-->`·`<!--/$-->`)으로 표시하는데, 구글 URL 추출기가 이를 상대 경로로 오인한 것이다. JS 청크의 문자열 리터럴에서 주웠을 가능성도 있고 둘은 구분 불가.
+
+**Next.js App Router + Suspense 를 쓰는 한 없앨 수 없는 영구 오탐.** 자세한 근거는 `baseline-2026-07-28.md` §B. 재조사 금지.
+
+당초 "라이브 스캔 결과 발생원 0건 → 과거 잔재 추정"이라 적었던 건 틀렸다 — `href` 만 보고 주석·JS 리터럴을 안 봤다.
+
+### 교훈
+
+> **"발생원 못 찾음"을 "발생원 없음"으로 적지 마라.** 어제 `/$`·`/&` 를 "과거 잔재 추정"으로 닫았는데, 실은 지금도 매 페이지에서 생성되고 있었다. 스캔 범위(href만)를 결론(원인 없음)으로 승격시킨 오류다.
+
+---
 
 ## 2026-07-28 필드 데이터 반영 — 우선순위 재조정 · G8 신설
 
