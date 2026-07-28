@@ -323,7 +323,7 @@ AI 자동 기록 (80~90%) + 세션 끝 "빠진 거 없어?" 확인 (10~20%) = �
 
 ---
 
-## 현재 상태 (마지막 갱신: 2026-07-22, 요한 승인)
+## 현재 상태 (마지막 갱신: 2026-07-29, 요한 승인 "다 ㄱㄱ")
 - **Phase**: 3 라이브 안정화 **완료** — 배포 + 라이브 재검증 체크리스트 전 항목 통과
 - **완료**: ①~⑬ / showroom·diagnosis·services / AI 챗봇·TTS / Fuse 검색(코어페이지 포함) / og:image 전 라우트 / 브랜드 404 / RSS / sitemap(store·contact) / `/portfolio`→`/showroom` 308 / 문의 폼 라이브 정상(201 확인) / Supabase RLS 보안 폐쇄(ADR-003) / 쇼룸 케이스 스터디 체계 + 대표 사례 1호(플렉시블) 라이브 — 원본 익명판 데모·실사용 영상 히어로 / 과거 실명 노출 차단(Vercel 삭제·레포 private) / **러닝 로그(B v1) 라이브 — `/learning-log` Notion Headless CMS, 특강 후기 3편 렌더(#61). 읽기전용 통합(`yohanstudio-web`) + 상세 부모검증(URL 조작 차단). 특강 후기 MDX 노션링크→내부링크 교체** / **업데이트 소식 시스템 출시(#65·#66·#67)** — `/updates` 릴리즈 노트(이원화 운영, ADR-004, 백필 5건: SnapContext 3·VHK 2) + 홈 "Now" 활동 피드(4소스 자동 집계, revalidate 60 유지) + SnapContext 0.3.0 글 발행(실측 자산·gpt-image-2 커버)
 - **스토어**: 코드 완성이지만 **판매 일시 중지** (`src/data/storeConfig.ts`의 `STORE_SALES_ENABLED=false`) — 기능 실습이었고 실상품·가격 미정. 재개 조건: 실상품·가격·전달물(download_url) 확정 + `stripe_price_id`를 실제 `price_` ID로 정리 + Stripe E2E. 상품 데이터는 `studio_products`(DB)가 단일 소스 — 하드코딩 금지
@@ -331,10 +331,12 @@ AI 자동 기록 (80~90%) + 세션 끝 "빠진 거 없어?" 확인 (10~20%) = �
 - **콘텐츠 파이프라인**: 릴리즈마다 `pnpm new:update -- <제품> <버전> "요약"`(5분), 큰 릴리즈만 블로그 승격+`blogSlug` 연결(ADR-004). 커버는 `pnpm blog:cover -- <slug> "영문 컨셉"` (gpt-image-2, 시리즈 톤 고정). **블로그 글 라이브 검증 통과 = naver-convert 자동 선제 시작** (요한 확정 2026-07-20 — 네이버만, 최종 발행 클릭은 사람). 절차 SoT: `docs/content/blog-publishing-system.md`
 - **네이버 발행 워크플로 v2 가동(2026-07-20 완주)**: SnapContext 0.3.0 네이버 실발행 완료 — https://blog.naver.com/yohan3071/224351482750 (라이브 검증 7/7). 도구 `pnpm naver -- <slug> --step preview|inject`. 확정 실측: ①`inject`는 항상 md에서 재변환(stale fragment 주입 사고 방지) ②SE ONE은 `text-align:center`+`color` paste 생존 — 고정멘트 가운데+회색#c2c2c2·이모지 변환기 자동 ③태그 자동 입력 확정(발행 패널 combobox fill+Enter). 최종 발행 클릭만 사람(불변). 취향 SoT: `skills/yohan-dual-blog/references/naver-structure.md`
 - **브랜드 이모지 세트 완료(2026-07-22, #74~82)**: 유니코드 "짜침" 대체 — **18개 확정**. 17개 = Fluent Emoji High Contrast(MIT, 유니코드 이모지의 단색 실루엣판이라 팔레트와 1:1), AI 1개 = **자체 제작**(기성 로봇 40여 종에 눈높이 맞는 게 없어 gpt-image-2 생성 → potrace 벡터화). 색은 웹·네이버 **모두 오렌지 고정**. **SoT = `src/data/emojiSet.json` 단일** — 웹(`EmojiIcon`)·PNG생성기(`gen-emoji.mjs`)·네이버 변환기(`naver-to-html.mjs`) 셋이 같은 파일을 읽는다(PNG 재생성 시 바이트 일치로 실증). 원고(.md)엔 계속 유니코드로 쓰면 fragment 생성 시 자동 치환(줄 맨 앞 전용·본문16px·소제목22px·`&nbsp;`). **원고 규칙 2가지**: 선두 이모지는 1개만, 이모지를 서식(`**`·`[]()`)으로 감싸지 말 것 — 어기면 변환 시 경고가 뜬다. chip(오렌지 원)은 폐기
-- **마지막 커밋**: `#82 선두 이모지 소실 버그 수정 + 문서 자기모순 정정`
-- **다음 작업**: visualize 스킬에 브랜드 이모지 배선(내 HTML 보고서 톤 통일) / 러닝 로그 v2(이미지 ISR/프록시) / GAS 매출·재고 사례 완성 (Phase 6 평가 선정작, clasp 코드 회수부터, 요한 계정 필요) / 실상품 기획→스토어 재개 / 진단 결과 저장 + 결과 시점 이메일 캡처 / Phase 4(n8n 멀티채널)
+- **SEO 프로그램 1차 완주(2026-07-27~28, PR #85~#98 13건)**: 발단 "SSR이 SEO에 좋다?" → 조사 결과 축이 틀렸고(서버 HTML에 본문이 실리느냐가 축) 실결함 발견 → 이틀 완주. **①크롤 복구** — `/blog`·`/updates`·`/showroom` 목록이 초기 HTML 0건(useSearchParams+Suspense fallback null)이던 것 복구(라이브 실측 0→11·0→4·1→8), canonical 홈 오염 제거, sitemap lastmod 를 빌드시각→콘텐츠 날짜로(글 수정 시 frontmatter `updated` 필요) **②색인 자동화 가동** — 콘텐츠 master 머지 = IndexNow 자동 통보(Bing·네이버·Yandex, 첫 제출 HTTP 202 실측). 구글은 sitemap lastmod 가 담당(공식 자동 수단 없음). 키 `public/f2bfc153….txt`(공개값), GH Variables `INDEXNOW_KEY`. 결정 SoT: ADR-005 **③회귀 가드 CI** — `npm run seo:check` 8검사(목록·canonical·vercel.app 308)가 lint→typecheck→build 뒤에 돎. dev 서버 Playwright 로는 이 회귀 재현 불가(공식 문서) **④결제 킬스위치 서버 강제(#92)** — `STORE_SALES_ENABLED` 가 UI 에만 있어 API 직호출로 실결제 성립하던 구멍 차단 **⑤GSC 404 판독** — `/$`·`/&` = React Suspense 주석 마커의 영구 오탐(재조사 금지), "검증 실패" 메일도 정상·무시. 프로그램 SoT: `docs/seo/PROGRAM.md` · 실측: `docs/seo/baseline-2026-07-28.md` · 무인루프 보고: `docs/audits/overnight-2026-07-28.md`
+- **무인 결함루프 첫 실전 성공**: overnight-autoloop 에 확정 티켓 5건을 이월 파일(deferredPath)로 시드 주입 → 밤새 5/5 PR, park 0, 금지 파일 0 접촉. rationale 에 명세 SoT·금지사항·검증 명령을 박는 패턴이 유효. 자체 발굴 잔여 12건(중복 제거)은 `yohan-brain/docs/audits/overnight-deferred-studio.json` 대기 — 웹훅 upsert(결제, 사람게이트)가 최우선
+- **마지막 커밋**: `#98 ADR-005 IndexNow 자동 제출 결정 기록`
+- **다음 작업**: **G8-T1 발행 글 12편 검색어 매핑** (GSC 실측 비브랜드 검색어 0개 = 진짜 병목, `docs/seo/PROGRAM.md` G8) / 밤 발굴 웹훅 upsert(결제·사람게이트) / visualize 스킬에 브랜드 이모지 배선 / 러닝 로그 v2(이미지 ISR/프록시) / GAS 매출·재고 사례 완성 / 실상품 기획→스토어 재개 / 진단 결과 저장 + 이메일 캡처 / Phase 4(n8n 멀티채널)
 - **블로커**: 없음
-- **관찰 대기**: auto-trader n8n WF1의 `daily_price` 익일 적재 확인 (RLS 적용 후 첫 실행) / **러닝 로그 페이지가 A키 실험 때 `Claude MCP` 통합에도 공유됨 — 최소권한 위해 해제 검토(서버는 `yohanstudio-web`만 쓰면 됨)**
+- **관찰 대기**: Bing WMT → IndexNow 로그에 첫 제출 등장 확인 / GSC "검증 실패" 메일 = 정상·무시(판독표 `docs/seo/baseline-2026-07-28.md`) / auto-trader n8n WF1의 `daily_price` 익일 적재 확인 / 러닝 로그 페이지 `Claude MCP` 통합 공유 해제 검토(최소권한)
 
 > 자동 패치 금지 — 사람 확인 후 갱신.
 
