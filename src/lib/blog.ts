@@ -27,6 +27,8 @@ export type BlogFrontmatter = {
   title: string
   description: string
   date: string
+  /** 발행 후 본문을 고친 날짜(YYYY-MM-DD). 없으면 date를 그대로 쓴다. sitemap lastmod 용. */
+  updated?: string
   tags: string[]
   category: string
   thumbnail?: string
@@ -45,6 +47,14 @@ function toStringArray(value: unknown): string[] {
       .filter(Boolean)
   }
   return []
+}
+
+// 오타 난 updated가 sitemap에 Invalid Date로 새지 않도록 파싱 시점에 걸러낸다.
+function toOptionalDate(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined
+  const trimmed = value.trim()
+  if (!trimmed || Number.isNaN(Date.parse(trimmed))) return undefined
+  return trimmed
 }
 
 function toPublished(value: unknown): boolean {
@@ -73,6 +83,7 @@ export function parseBlogFrontmatter(
     title,
     description,
     date,
+    updated: toOptionalDate(data.updated),
     tags: toStringArray(data.tags),
     category,
     thumbnail,
