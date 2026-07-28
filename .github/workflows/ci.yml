@@ -16,4 +16,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      - run: npm run typecheck
       - run: npm run build
+      # 크롤러가 받는 초기 HTML에 목록·canonical이 실려 있는지 빌드 산출물로 검사.
+      # 반드시 build 뒤에 와야 한다(.next/server/app/*.html 을 읽는다).
+      - run: npm run seo:check
