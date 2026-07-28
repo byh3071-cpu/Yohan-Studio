@@ -18,6 +18,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "seo:check": "node scripts/check-initial-html.mjs",
+    "seo:ping": "node scripts/seo-indexnow.mjs",
     "qa:install": "playwright install chromium",
     "qa:test": "playwright clear-cache && playwright test"
   },
