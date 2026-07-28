@@ -1,0 +1,64 @@
+# 콘텐츠 발행 시 IndexNow 색인 자동 제출 (G2-T4)
+#
+# master 에 콘텐츠(.mdx)가 push 되면 변경 URL 을 산출해 IndexNow 로 통보한다.
+# 한 곳에 제출하면 참여 엔진 전체(Bing·Naver·Yandex 등)에 공유된다.
+# 엔진 스크립트가 라이브 sitemap 폴링(최대 10분)으로 배포 반영을 기다린 뒤
+# 제출하므로, Vercel 배포와의 타이밍 경합이 없다.
+#
+# INDEXNOW_KEY 는 Variables 다(Secrets 아님) — 키는 /<key>.txt 로 공개되는 값이다.
+name: seo-indexnow
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "src/content/blog/**"
+      - "src/content/updates/**"
+      - "src/content/showroom/**"
+      - "src/blog/posts/**"
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "직접 제출할 URL (콤마 구분, 비우면 최근 커밋 diff)"
+        required: false
+        default: ""
+      dry_run:
+        description: "true 면 후보만 출력하고 제출 안 함"
+        required: false
+        default: "false"
+
+concurrency:
+  group: seo-indexnow
+  cancel-in-progress: false # 연속 push 의 diff 를 놓치지 않는다
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # push 이벤트의 before...sha diff 에 필요. 기본 depth 1 이면
+          # before 커밋이 로컬에 없어 git diff 가 조용히 전부 실패한다.
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      # 의존성 0 스크립트 — npm ci 불필요
+      - name: IndexNow 제출
+        env:
+          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
+        run: |
+          FLAGS=""
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            [ -n "${{ github.event.inputs.urls }}" ] && FLAGS="--urls ${{ github.event.inputs.urls }}"
+            [ "${{ github.event.inputs.dry_run }}" = "true" ] && FLAGS="$FLAGS --dry-run"
+            node scripts/seo-indexnow.mjs $FLAGS
+          else
+            BEFORE="${{ github.event.before }}"
+            # 첫 push/force-push 는 before 가 0000... — 직전 커밋으로 폴백
+            if echo "$BEFORE" | grep -q '^0*$'; then
+              echo "before 가 zero-sha — HEAD~1 폴백"
+              BEFORE="HEAD~1"
+            fi
+            node scripts/seo-indexnow.mjs --base "$BEFORE" --head "${{ github.sha }}"
+          fi
