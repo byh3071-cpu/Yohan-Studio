@@ -7,38 +7,21 @@ import {
 } from "ai"
 
 import { getChatSystemPrompt } from "@/lib/chatContext"
+import { createRateLimiter, getClientKey } from "@/lib/rateLimit"
 
 export const runtime = "nodejs"
 export const maxDuration = 30
 
-// In-memory rate limit. Single-instance only — Edge/multi-region 환경에서는 KV/Redis로 교체.
 const RATE_LIMIT_WINDOW_MS = 60_000
 const RATE_LIMIT_MAX = 20
 const MAX_MESSAGES = 30
 const MAX_MESSAGE_CHARS = 4_000
 const MAX_BODY_BYTES = 64 * 1024
 
-type Bucket = { count: number; resetAt: number }
-const buckets = new Map<string, Bucket>()
-
-function getClientKey(req: Request): string {
-  const xff = req.headers.get("x-forwarded-for")
-  const real = req.headers.get("x-real-ip")
-  const raw = xff?.split(",")[0]?.trim() || real || "anonymous"
-  return raw.slice(0, 128)
-}
-
-function checkRateLimit(key: string): boolean {
-  const now = Date.now()
-  const b = buckets.get(key)
-  if (!b || b.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS })
-    return true
-  }
-  if (b.count >= RATE_LIMIT_MAX) return false
-  b.count++
-  return true
-}
+const limiter = createRateLimiter({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
+})
 
 function jsonError(status: number, error: string, extraHeaders?: Record<string, string>) {
   return new Response(JSON.stringify({ error }), {
@@ -124,8 +107,7 @@ export async function POST(req: Request) {
     return jsonError(500, "GOOGLE_GENERATIVE_AI_API_KEY not configured")
   }
 
-  const key = getClientKey(req)
-  if (!checkRateLimit(key)) {
+  if (!limiter.check(getClientKey(req))) {
     return jsonError(429, "Too many requests", { "retry-after": "60" })
   }
 
