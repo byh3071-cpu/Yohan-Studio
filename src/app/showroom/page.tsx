@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 import { FeaturedBanner } from "@/components/showroom/FeaturedBanner"
 import { ProjectGrid } from "@/components/showroom/ProjectGrid"
+import { StaticProjectGrid } from "@/components/showroom/StaticProjectGrid"
 import { getAllShowroomProjects } from "@/lib/showroom"
 
 export const metadata: Metadata = {
@@ -100,7 +101,7 @@ export default function ShowroomPage() {
         </div>
         <FeaturedBanner projects={projects} />
         <h2 style={sectionLabel}>기존 프로젝트 · 순차적으로 사례 전환 중</h2>
-        <Suspense fallback={null}>
+        <Suspense fallback={<StaticProjectGrid projects={regularProjects} />}>
           <ProjectGrid projects={regularProjects} />
         </Suspense>
       </div>
