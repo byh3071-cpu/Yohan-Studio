@@ -14,6 +14,8 @@ import { getSiteUrl } from "@/lib/siteUrl"
 
 type PageProps = { params: Promise<{ slug: string }> }
 
+const ALLOW_LOCAL_DRAFT_PREVIEW = process.env.NODE_ENV === "development"
+
 export async function generateStaticParams() {
   return getPublishedPosts().map((p) => ({ slug: p.slug }))
 }
@@ -21,9 +23,18 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const meta = getPostMeta(slug)
-  if (!meta || !meta.published) {
+  if (!meta || (!meta.published && !ALLOW_LOCAL_DRAFT_PREVIEW)) {
     return { title: "글을 찾을 수 없음" }
   }
+
+  if (!meta.published) {
+    return {
+      title: `[초안] ${meta.title}`,
+      description: meta.description,
+      robots: { index: false, follow: false },
+    }
+  }
+
   const base = getSiteUrl()
   const thumbUrl = meta.thumbnail
     ? meta.thumbnail.startsWith("http")
@@ -60,9 +71,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params
   const compiled = await compileBlogPost(slug)
-  if (!compiled || !compiled.meta.published) notFound()
+  if (!compiled || (!compiled.meta.published && !ALLOW_LOCAL_DRAFT_PREVIEW)) notFound()
 
   const { meta, content } = compiled
+  const isDraftPreview = !meta.published
   const { prev, next } = getAdjacentPosts(slug)
   const isLocalThumb = meta.thumbnail?.startsWith("/")
 
@@ -98,6 +110,14 @@ export default async function BlogPostPage({ params }: PageProps) {
     letterSpacing: "0.05em",
   }
   const cat: CSSProperties = { color: "var(--accent)", textTransform: "uppercase" }
+  const draftBadge: CSSProperties = {
+    padding: "4px 8px",
+    background: "var(--accent)",
+    color: "var(--bg)",
+    border: "1px solid var(--line)",
+    fontWeight: 800,
+    letterSpacing: "0.08em",
+  }
   const dateStyle: CSSProperties = {
     color: "var(--accent)",
     fontFamily: "var(--font-en)",
@@ -146,14 +166,16 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <article style={section}>
-      <ArticleJsonLd meta={meta} />
-      <BreadcrumbJsonLd
-        items={[
-          { name: "홈", path: "/" },
-          { name: "블로그", path: "/blog" },
-          { name: meta.title, path: `/blog/${slug}` },
-        ]}
-      />
+      {!isDraftPreview && <ArticleJsonLd meta={meta} />}
+      {!isDraftPreview && (
+        <BreadcrumbJsonLd
+          items={[
+            { name: "홈", path: "/" },
+            { name: "블로그", path: "/blog" },
+            { name: meta.title, path: `/blog/${slug}` },
+          ]}
+        />
+      )}
       <div className="post-shell">
         <div style={main}>
           <Link href="/blog" style={back}>
@@ -161,9 +183,10 @@ export default async function BlogPostPage({ params }: PageProps) {
           </Link>
           <header style={hero}>
             <div style={row}>
+              {isDraftPreview && <span style={draftBadge}>LOCAL DRAFT · NOT PUBLISHED</span>}
               <span style={cat}>{meta.category}</span>
               <span style={dateStyle}>{meta.date}</span>
-              <ViewCounter slug={slug} />
+              {!isDraftPreview && <ViewCounter slug={slug} />}
             </div>
             <h1 style={h1}>{meta.title}</h1>
             <p style={desc}>{meta.description}</p>
@@ -200,7 +223,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           {meta.relatedProjects && meta.relatedProjects.length > 0 && (
             <RelatedShowroomProjects slugs={meta.relatedProjects} />
           )}
-          <PostNav prev={prev} next={next} />
+          {!isDraftPreview && <PostNav prev={prev} next={next} />}
         </div>
         <TableOfContents />
       </div>
