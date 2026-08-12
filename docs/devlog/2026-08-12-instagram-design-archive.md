@@ -91,3 +91,10 @@
 - 같은 Next.js 16.2.4 소스를 `next build --webpack`으로 다시 빌드해 `/guides/luna-max`의 정적 생성을 확인했습니다.
 - 교훈: 작업트리 의존성 재사용은 빌드 엔진의 파일시스템 경계 정책과 별개입니다. 우회 검증을 사용했다면 어떤 엔진이 통과했는지 구분해 기록해야 합니다.
 - 패턴: `docs/patterns/PAT-007-turbopack-worktree-junction.md`
+
+## Sol Advisor Windows ACL 수정안 재검증
+
+- 공개 PR #22의 헤드 `c95f6da`를 격리 복제해 정적 검토와 Windows MCP 테스트를 수행했고 34 PASS / 0 FAIL을 확인했습니다.
+- 실제 Codex Desktop의 플러그인 데이터 폴더에서는 MCP 실행 계정이 `CodexSandboxOnline`, 폴더 소유자가 로그인 사용자이며 `CodexSandboxUsers`에 `Modify`가 부여돼 PR의 소유자·읽기 전용 전제와 충돌했습니다.
+- 검사를 우회하거나 ACL을 바꾸지 않고 전역 적용을 중단했으며, 세부 증거는 `docs/content/reviews/codex-luna-max-guide-v2/smoke-test-report-v7.md`에 기록했습니다.
+- 교훈: 보안 패치의 자체 테스트가 통과해도 호스트가 실제로 제공하는 실행 계정과 데이터 디렉터리 ACL 계약을 연결한 통합 테스트가 없으면 호환성을 주장할 수 없습니다.

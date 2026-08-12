@@ -153,7 +153,7 @@ export default function LunaMaxGuidePage() {
       <div className={styles.notice} role="note">
         <strong>Windows에서는 현재 중단해 주세요.</strong>
         <p>
-          Sol Advisor v0.5.0은 Windows에서 <code>PLUGIN_DATA</code> 권한을 POSIX 방식으로 검사해 설정 MCP가 차단됩니다. 원본 이슈 #20이 해결되기 전에는 Windows용 Luna · Max 플러그인 경로를 정상 지원으로 안내하지 않습니다.
+          Sol Advisor v0.5.0은 Windows에서 <code>PLUGIN_DATA</code> 권한을 POSIX 방식으로 검사해 설정 MCP가 차단됩니다. ACL 방식으로 바꾼 PR #22도 실제 Codex Desktop의 실행 계정과 쓰기 권한 구조를 통과하지 못했습니다. maintainer가 호환 수정본을 확정하기 전에는 Windows용 Luna · Max 플러그인 경로를 정상 지원으로 안내하지 않습니다.
         </p>
       </div>
 
@@ -238,6 +238,9 @@ export default function LunaMaxGuidePage() {
         </p>
         <a className={styles.textLink} href="https://github.com/DannyMac180/sol-advisor/issues/20" target="_blank" rel="noreferrer noopener">
           Windows 권한 검사 이슈 #20 확인 ↗
+        </a>
+        <a className={styles.textLink} href="https://github.com/DannyMac180/sol-advisor/pull/22" target="_blank" rel="noreferrer noopener">
+          Windows ACL 수정 PR #22 확인 ↗
         </a>
       </section>
 
@@ -399,7 +402,7 @@ export default function LunaMaxGuidePage() {
           <div>
             <span>04</span>
             <h3>Windows에서 설정 도구가 보이지 않습니다</h3>
-            <p>Sol Advisor v0.5.0의 알려진 이슈 #20과 일치합니다. 권한 검사를 제거하거나 다른 모델로 우회하지 말고 upstream 수정본을 기다려 주세요.</p>
+            <p>Sol Advisor v0.5.0의 알려진 이슈 #20과 일치합니다. PR #22도 실제 Codex Desktop 데이터 폴더에서 차단되는 것을 확인했습니다. 권한 검사나 Windows ACL을 임의로 변경하지 말고 maintainer가 확정한 호환 수정본을 기다려 주세요.</p>
           </div>
         </div>
       </section>
@@ -408,7 +411,7 @@ export default function LunaMaxGuidePage() {
         <div>
           <p>검증 기준</p>
           <strong>Sol Advisor v0.5.0 · Codex CLI 0.147.0</strong>
-          <span>2026년 8월 12일 확인 · Windows 설치와 직접 Luna / Max 실행은 성공했지만, 플러그인 전체 경로는 이슈 #20으로 차단됐습니다.</span>
+          <span>2026년 8월 13일 확인 · Windows 설치와 직접 Luna / Max 실행은 성공했지만, 공식 v0.5.0과 ACL 수정 PR #22 모두 플러그인 전체 경로를 통과하지 못했습니다.</span>
         </div>
         <div className={styles.footerLinks}>
           <a href="https://github.com/DannyMac180/sol-advisor" target="_blank" rel="noreferrer noopener">Sol Advisor 원본 ↗</a>
