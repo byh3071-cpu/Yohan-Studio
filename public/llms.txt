@@ -10,6 +10,7 @@
 - [Design System](https://yohanstudio.co/design): v1→v2 진화, AI 분업, 로드맵
 - [Learning Log](https://yohanstudio.co/learning-log): 특강·강연 배움 기록 (노션 세컨드브레인을 Notion API로 렌더)
 - [VHK — Vibe Harness Kit](https://yohanstudio.co/vhk): 바이브코딩 풀사이클 CLI (`npm i -g @byh3071/vhk`)
+- [Luna · Max 설치 가이드](https://yohanstudio.co/guides/luna-max): Sol Advisor 설치와 Codex Luna · Max 작업 경로 안내
 - [Store](https://yohanstudio.co/store): 디지털 상품·결제 (Phase 3)
 - [Diagnosis](https://yohanstudio.co/diagnosis): AI'm Scan 자가진단
 - [Services](https://yohanstudio.co/services): 서비스·문의 CTA

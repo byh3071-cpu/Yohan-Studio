@@ -42,44 +42,25 @@ Sol이 작업을 설계하고 나눈 뒤 `gpt-5.6-luna`와 `max`를 함께 지�
 
 ## 빠른 답장 뒤 후속 DM
 
-먼저 확인해 주세요.
+설치 명령어와 Luna 작업 요청문을 한 페이지에 정리했습니다. 🌙
 
-1. Sol Advisor는 OpenAI 공식 기능이 아닌 커뮤니티 플러그인입니다.
-2. Bun이 설치되어 있어야 합니다. Windows PowerShell에서는 공식 설치 명령을 실행한 뒤 새 터미널에서 `bun --version`으로 확인해 주세요.
-3. Luna 작업은 Codex 앱의 작업 도구와 `gpt-5.6-luna`·`max` 사용 권한이 필요합니다.
+처음 설치하셔도 아래 순서대로 따라가실 수 있습니다.
 
-Windows용 Bun 설치:
+- Bun 설치 여부 확인
+- Sol Advisor 플러그인 등록
+- 첫 설정 인터뷰
+- Luna / Max 요청문 복사
+- 막힐 때 확인할 항목
 
-```powershell
-powershell -c "irm bun.sh/install.ps1|iex"
-```
+버튼: `설치 가이드 열기`
 
-설치 뒤 Codex·VS Code와 터미널을 완전히 다시 열고 확인합니다.
+버튼 유형: 웹사이트 열기
 
-```text
-bun --version
-```
+배포 후 URL:
+https://yohanstudio.co/guides/luna-max
 
-플러그인 등록:
-
-```text
-codex plugin marketplace add DannyMac180/sol-advisor --ref main
-codex plugin add sol-advisor@sol-advisor
-```
-
-Luna 작업 경로 승인 문장:
-
-```text
-Use the Luna task lane for this feature.
-```
-
-이 문장은 Luna 작업 경로를 사용할 현재 요청마다 다시 입력해야 합니다. Luna 전용으로 사용한다면 `install-agents.sh`는 필요하지 않습니다. Luna·Max·필수 앱 작업 도구가 없으면 다른 모델로 자동 대체되지 않고 중단됩니다.
-
-원본 저장소:
-https://github.com/DannyMac180/sol-advisor
-
-Bun 공식 설치 문서:
-https://bun.sh/docs/installation
+보조 문구:
+Sol Advisor는 OpenAI 공식 기능이 아닌 커뮤니티 플러그인입니다. Luna 작업은 Codex 데스크톱 앱의 작업 도구와 Luna·Max 사용 권한이 필요합니다.
 
 ## 실제 플랫폼 점검 순서
 
@@ -87,7 +68,7 @@ https://bun.sh/docs/installation
 2. `루나` 키워드와 공개 답글 3종 저장
 3. Opening DM을 `Send as a Private Reply`로 설정
 4. `가이드 받기`를 빠른 답장 또는 일반 버튼으로 연결
-5. 후속 DM에 준비사항·명령어·프롬프트·링크 입력
+5. 후속 DM에 `설치 가이드 열기` 웹사이트 버튼과 위 URL 입력
 6. ManyChat 미리보기와 Instagram 미리보기 모두 확인
 7. 테스트 계정의 첫 댓글로 공개 답글·Opening DM·버튼·후속 DM 확인
 8. 결과 확인 뒤에만 사용자 승인으로 `Go Live`

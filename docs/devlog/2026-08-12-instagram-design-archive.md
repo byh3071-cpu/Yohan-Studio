@@ -68,3 +68,26 @@
 - 승인 전 교정본이 다시 날짜별 Codex 작업 폴더에만 남지 않도록 `docs/content/reviews/<revision-slug>/` 계약을 추가했습니다.
 - 다음 세션에서 재현할 수 있도록 렌더 코드·생성 원본·PNG·문안·검증 보고·승인 대기 매니페스트를 한 폴더에 묶습니다.
 - `reviews/`는 승인본·사이트 콘텐츠·디자인 인텔리전스 학습 대상이 아니며, 사용자 승인 뒤 새 revision을 `exports/`에 보관합니다.
+
+## Luna · Max 공개 설치가이드
+
+- 카드뉴스 댓글 자동화가 실제로 전달할 공개 설치가이드를 `/guides/luna-max`에 추가했습니다.
+- Bun 확인 → Sol Advisor 설치 → 첫 설정 → 현재 요청별 Luna 승인 순서로 재구성하고, 모든 명령과 요청문에 복사 버튼을 제공했습니다.
+- `install-agents.sh`는 Luna 전용 경로에 필요하지 않음을 분리해 표시하고, VS Code의 모델·추론 강도 제약과 Codex 데스크톱 앱 경로를 구분했습니다.
+- 사이트맵과 내부 검색 문서에 가이드를 등록하고, ManyChat 후속 DM 초안의 목적지를 `https://yohanstudio.co/guides/luna-max`로 연결했습니다.
+
+### 교훈
+
+소셜 콘텐츠의 “DM으로 가이드를 보낸다”는 약속은 긴 명령어를 DM 본문에 모두 넣는 것보다, 검증 날짜·원문·오류 해결까지 유지할 수 있는 공개 정본 페이지로 연결해야 업데이트 비용과 오독 위험이 낮아집니다.
+
+### 추가 산출물 포인터
+
+- 공개 페이지: `src/app/guides/luna-max/page.tsx`
+- ManyChat 초안: `docs/content/reviews/codex-luna-max-guide-v2/manychat-draft-v5.md`
+
+## Windows 작업트리 빌드 검증
+
+- 주 체크아웃의 `node_modules`를 junction으로 재사용한 상태에서 lint와 typecheck는 통과했지만, Turbopack은 프로젝트 루트 밖 링크를 거부했습니다.
+- 같은 Next.js 16.2.4 소스를 `next build --webpack`으로 다시 빌드해 `/guides/luna-max`의 정적 생성을 확인했습니다.
+- 교훈: 작업트리 의존성 재사용은 빌드 엔진의 파일시스템 경계 정책과 별개입니다. 우회 검증을 사용했다면 어떤 엔진이 통과했는지 구분해 기록해야 합니다.
+- 패턴: `docs/patterns/PAT-007-turbopack-worktree-junction.md`
