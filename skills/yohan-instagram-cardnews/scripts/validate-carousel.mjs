@@ -1,20 +1,37 @@
 import { mkdir, readdir } from "node:fs/promises";
-import { execFileSync } from "node:child_process";
+import { readFileSync, statSync } from "node:fs";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import process from "node:process";
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const skillRoot = path.dirname(scriptDir);
+const repositoryRoot = path.dirname(path.dirname(skillRoot));
+
+const findPrimaryCheckoutRoot = () => {
+  const dotGit = path.join(repositoryRoot, ".git");
+  if (statSync(dotGit).isDirectory()) return repositoryRoot;
+
+  const pointer = readFileSync(dotGit, "utf8").trim();
+  const match = /^gitdir:\s*(.+)$/i.exec(pointer);
+  if (!match) throw new Error(`worktree .git 포인터를 읽을 수 없습니다: ${dotGit}`);
+
+  const worktreeGitDir = path.resolve(repositoryRoot, match[1]);
+  const commonGitDir = path.dirname(path.dirname(worktreeGitDir));
+  return path.dirname(commonGitDir);
+};
 
 const loadSharp = () => {
   try {
     return createRequire(import.meta.url)("sharp");
   } catch (localError) {
     try {
-      const commonGitDir = execFileSync(
-        "git",
-        ["rev-parse", "--path-format=absolute", "--git-common-dir"],
-        { cwd: process.cwd(), encoding: "utf8", windowsHide: true },
-      ).trim();
-      const primaryCheckoutRoot = path.dirname(commonGitDir);
+      try {
+        return createRequire(path.join(repositoryRoot, "package.json"))("sharp");
+      } catch {}
+
+      const primaryCheckoutRoot = findPrimaryCheckoutRoot();
       return createRequire(path.join(primaryCheckoutRoot, "package.json"))("sharp");
     } catch (primaryError) {
       console.error("sharp를 찾지 못했습니다. Yohan Studio 주 작업트리에서 의존성을 먼저 설치한 뒤 다시 실행하세요.");

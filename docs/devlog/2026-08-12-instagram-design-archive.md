@@ -37,3 +37,9 @@
 - 스킬 진입점: `skills/yohan-instagram-cardnews/SKILL.md`
 - 검수 기준: `skills/yohan-instagram-cardnews/references/review-rubric.md`
 - 규격 검사: `skills/yohan-instagram-cardnews/scripts/validate-carousel.mjs`
+
+## 전역 발견 경로 실사용 검증
+
+- 프로젝트 작업트리에서는 통과하던 규격 검사기가 다른 작업 폴더의 전역 스킬 경로에서 `sharp`를 찾지 못하는 결함을 재현했습니다.
+- 현재 작업 폴더가 아니라 스킬 파일 위치에서 저장소 루트와 주 작업트리를 찾도록 수정했습니다.
+- 교훈: 프로젝트 로컬 스킬의 실행 스크립트는 호출자의 `cwd`를 소유 저장소로 가정하면 안 됩니다. 전역 발견 경로와 외부 작업 폴더에서 반드시 한 번 더 실행해야 합니다.
