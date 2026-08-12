@@ -7,6 +7,7 @@
     "new:project": "node scripts/new-project.mjs",
     "new:post": "node scripts/new-post.mjs",
     "new:update": "node scripts/new-update.mjs",
+    "content:archive-design": "node scripts/archive-design-output.mjs",
     "blog:cover": "node scripts/gen-cover.mjs",
     "naver": "node scripts/naver-publish.mjs",
     "blog:naver": "node skills/yohan-dual-blog/scripts/mdx-to-naver.mjs",
