@@ -47,4 +47,3 @@ Constraints: no text, no letters, no numbers, no logos, no watermark; no UI labe
 - 생성 이미지에는 텍스트를 넣지 않음
 - 한글·명령어·페이지 표기는 후편집
 - 내부 모델명을 특정 GPT Image 버전으로 보장하지 않음
-

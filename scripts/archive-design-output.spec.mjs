@@ -59,6 +59,42 @@ test("미승인 작업본은 파일 복사 전에 거부한다", async () => {
   });
 });
 
+test("승인자가 없으면 승인 상태여도 거부한다", async () => {
+  await withFixture(async ({ repositoryRoot, sourceRoot }) => {
+    const manifest = {
+      ...baseManifest,
+      slug: "missing-approver",
+      status: "approved",
+      approvedBy: "",
+      approvedAt: "2026-08-12",
+    };
+    await writeFile(path.join(sourceRoot, "missing-approver.json"), JSON.stringify(manifest), "utf8");
+
+    const result = runArchive(repositoryRoot, sourceRoot, "missing-approver.json");
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /approvedBy가 필요합니다/);
+  });
+});
+
+test("승인일 형식이 틀리면 승인 상태여도 거부한다", async () => {
+  await withFixture(async ({ repositoryRoot, sourceRoot }) => {
+    const manifest = {
+      ...baseManifest,
+      slug: "invalid-approval-date",
+      status: "approved",
+      approvedBy: "yohan",
+      approvedAt: "2026/08/12",
+    };
+    await writeFile(path.join(sourceRoot, "invalid-date.json"), JSON.stringify(manifest), "utf8");
+
+    const result = runArchive(repositoryRoot, sourceRoot, "invalid-date.json");
+
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /YYYY-MM-DD/);
+  });
+});
+
 test("승인 상태·승인자·승인일이 있으면 새 revision을 보관한다", async () => {
   await withFixture(async ({ repositoryRoot, sourceRoot }) => {
     const manifest = {

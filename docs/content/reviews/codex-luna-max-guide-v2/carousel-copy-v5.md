@@ -4,15 +4,15 @@
 
 ## 카드 1 — 표지
 
-Codex에서 Luna에  
-MAX 추론을  
+Codex에서 Luna에
+MAX 추론을
 적용하는 방법
 
 Sol이 지휘하고 Luna가 구현합니다.
 
 ## 카드 2 — 역할 구분
 
-Luna는 모델,  
+Luna는 모델,
 Max는 추론 강도입니다
 
 - SOL: 설계·분해·검증
