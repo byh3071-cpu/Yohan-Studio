@@ -9,6 +9,13 @@
 ## Yohan Studio 구조
 
 ```text
+docs/content/reviews/<revision-slug>/   # 세션을 넘어 검토할 작업본
+├─ scripts/                             # 재현 가능한 렌더 코드
+├─ assets/generated/                    # 생성 원본
+├─ output/                              # 검토용 PNG·축소본
+├─ validation-report.md
+└─ design-archive.pending.json          # 승인 전 상태
+
 docs/content/exports/<slug>/
 ├─ instagram-cardnews.md
 ├─ design-philosophy.md
@@ -20,6 +27,10 @@ docs/content/exports/<slug>/
 ```
 
 중간 시안과 실패본은 기본적으로 보관하지 않습니다. 비교 근거로 명시 승인된 경우에만 `assets/variants/`를 추가합니다.
+
+현재 세션 안에서 끝나는 작업본은 작업공간에 둘 수 있습니다. 다음 세션까지 검토를 이어갈 작업본은 `docs/content/reviews/<revision-slug>/`로 옮깁니다. 리뷰 폴더는 승인본이 아니며 사이트 콘텐츠나 디자인 인텔리전스의 학습 대상으로 취급하지 않습니다.
+
+승인 뒤에는 대기 매니페스트의 `status`, 승인자, 승인일을 채워 `content:archive-design`을 실행합니다. 새 revision이 `exports/`에 보관된 것을 확인한 뒤 리뷰 폴더 정리는 별도 변경으로 처리합니다.
 
 ## 보관 명령
 
@@ -35,6 +46,7 @@ npm run content:archive-design -- --source-root "C:\path\to\workspace" --manifes
 
 - slug 경로 이탈 차단
 - 기존 보관물 덮어쓰기 거부
+- `status: approved`·승인자·승인일이 없는 작업본 보관 거부
 - 최종본·생성 원본·문서 분리
 - 모든 보관 파일의 SHA-256 기록
 - PC 절대경로를 Git 추적 메타데이터에 기록하지 않음

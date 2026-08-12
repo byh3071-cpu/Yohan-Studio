@@ -25,6 +25,9 @@ const manifest = JSON.parse(await readFile(manifestAbs, "utf8"));
 if (manifest.schemaVersion !== 1) throw new Error("지원하지 않는 schemaVersion입니다.");
 if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(manifest.slug)) throw new Error("slug 형식이 올바르지 않습니다.");
 if (!Array.isArray(manifest.finalAssets) || manifest.finalAssets.length === 0) throw new Error("finalAssets가 비어 있습니다.");
+if (manifest.status !== "approved") throw new Error("사용자가 승인한 최종본만 보관할 수 있습니다: status는 approved여야 합니다.");
+if (typeof manifest.approvedBy !== "string" || manifest.approvedBy.trim() === "") throw new Error("승인자 approvedBy가 필요합니다.");
+if (typeof manifest.approvedAt !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(manifest.approvedAt)) throw new Error("승인일 approvedAt은 YYYY-MM-DD 형식이어야 합니다.");
 
 const exportsRoot = path.resolve(repositoryRoot, "docs", "content", "exports");
 const targetRoot = path.resolve(exportsRoot, manifest.slug);

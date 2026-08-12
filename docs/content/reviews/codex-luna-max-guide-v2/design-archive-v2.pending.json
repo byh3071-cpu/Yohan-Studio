@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "slug": "codex-luna-max-guide-v2",
+  "id": "design-instagram-codex-luna-max-guide-v2",
+  "title": "Codex에서 Luna에 MAX 추론을 적용하는 방법",
+  "kind": "design-asset",
+  "media": "instagram-cardnews",
+  "owner": "yohan-studio",
+  "status": "pending-approval",
+  "goldenCandidate": false,
+  "approvedBy": "",
+  "approvedAt": "",
+  "finalAssets": [
+    "output/carousel-v5/01-cover.png",
+    "output/carousel-v5/02-roles.png",
+    "output/carousel-v5/03-workflow.png",
+    "output/carousel-v5/04-install.png",
+    "output/carousel-v5/05-luna-route.png",
+    "output/carousel-v5/06-max.png",
+    "output/carousel-v5/07-cautions.png",
+    "output/carousel-v5/08-cta.png",
+    "output/carousel-v5/preview-contact-sheet.png",
+    "output/carousel-v5/preview-instagram-scale.png"
+  ],
+  "sourceAssets": [
+    "assets/generated/master-orbit.png",
+    "assets/generated/task-lanes.png",
+    "assets/generated/max-rings.png"
+  ],
+  "documents": [
+    { "source": "carousel-copy-v5.md", "target": "instagram-cardnews.md" },
+    { "source": "design-philosophy-v2.md", "target": "design-philosophy.md" },
+    { "source": "design-generation-notes-v5.md", "target": "design-generation-notes.md" },
+    { "source": "image-prompts.md", "target": "image-prompts.md" },
+    { "source": "manychat-draft-v5.md", "target": "manychat-draft.md" },
+    { "source": "validation-report-v5.md", "target": "validation-report.md" }
+  ],
+  "reusableParts": [
+    "근흑색 에디토리얼 배경과 보랏빛 달 포인트",
+    "따뜻한 백색 궤도로 역할 관계를 나타내는 방식",
+    "이미지 생성과 정확한 타이포 조판을 분리하는 제작 방식",
+    "76px 외곽 여백과 하단 계정·페이지 번호 시스템"
+  ],
+  "avoidPatterns": [
+    "사실 검증 전에 디자인을 승인 상태로 보관",
+    "정보 패널로 중심 비주얼 가림",
+    "Luna와 Max를 슬래시로 결합",
+    "설명 없는 lane 용어 노출",
+    "CLI 짧은 플래그의 의미 추정"
+  ],
+  "provenance": [
+    "GPT 기반 비주얼 생성",
+    "Pillow 기반 한글 타이포 조판",
+    "사용자 피드백과 실제 Instagram 화면 반영",
+    "Sol Advisor 원문·Codex CLI 도움말·ManyChat 공식 문서 교차검증",
+    "1080x1350 RGB·50% 축소 검증"
+  ]
+}
