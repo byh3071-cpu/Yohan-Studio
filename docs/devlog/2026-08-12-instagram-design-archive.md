@@ -21,3 +21,19 @@
 - 실제 보관물: `docs/content/exports/codex-luna-max-guide/`
 - 자동화: `scripts/archive-design-output.mjs`
 
+## 카드뉴스 제작 스킬 초안
+
+- 요한 생태계 계약을 대조한 결과, 계정 전용 카드뉴스 스킬의 정본 위치를 범용 `yohan-cc-skills`가 아니라 콘텐츠 소유 저장소인 `skills/yohan-instagram-cardnews/`로 결정했습니다.
+- 제작·실제 댓글 DM 자동화·승인본 보관을 분리하고, 사용자 승인 전 `Go Live`와 실제 발송을 금지했습니다.
+- 1080×1350 RGB, 순차 파일명, 50% 인스타 축소본을 자동 검사하는 `validate-carousel.mjs`를 추가했습니다.
+- 한 번 승인된 시각 스타일을 전역 취향으로 일반화하지 않고, 서로 다른 게시물의 반복 성공과 사용자 승인을 거쳐 승격하도록 정리했습니다.
+
+### 교훈
+
+콘텐츠 계정에 강하게 결합된 스킬은 멀티벤더 범용 스킬 저장소보다 발행 프로젝트에 두는 편이 소유권과 디자인 자산 경계를 보존합니다. 전역 설치본을 먼저 만들면 Git 정본 없이 캐시만 남을 수 있으므로, 프로젝트 원본→실사용 검증→필요 시 범용 승격 순서를 지켜야 합니다.
+
+### 추가 산출물 포인터
+
+- 스킬 진입점: `skills/yohan-instagram-cardnews/SKILL.md`
+- 검수 기준: `skills/yohan-instagram-cardnews/references/review-rubric.md`
+- 규격 검사: `skills/yohan-instagram-cardnews/scripts/validate-carousel.mjs`

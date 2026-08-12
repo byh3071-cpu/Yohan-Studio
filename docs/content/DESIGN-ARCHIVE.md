@@ -29,6 +29,8 @@ docs/content/exports/<slug>/
 npm run content:archive-design -- --source-root "C:\path\to\workspace" --manifest design-archive.json
 ```
 
+카드뉴스의 기획·모바일 검수·댓글→DM 문구·승인 게이트는 `skills/yohan-instagram-cardnews/SKILL.md`를 따릅니다. 스킬은 작업본을 먼저 만들고, 이 보관 명령은 사용자가 승인한 최종본에만 실행합니다.
+
 명령은 다음을 보장합니다.
 
 - slug 경로 이탈 차단
@@ -42,4 +44,3 @@ npm run content:archive-design -- --source-root "C:\path\to\workspace" --manifes
 - `status: approved`는 해당 프로젝트 결과물로 승인됐다는 뜻입니다.
 - `golden_candidate: true`는 디자인 인텔리전스의 재사용 후보일 뿐 전역 취향 정본으로 자동 승격되지 않습니다.
 - 전역 골든·안정 취향 승격은 관제탑 또는 Brain CLI에서 사람 승인을 거친 뒤 별도로 기록합니다.
-
