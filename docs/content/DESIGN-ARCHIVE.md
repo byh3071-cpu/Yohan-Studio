@@ -15,7 +15,7 @@ docs/content/exports/<slug>/
 ├─ design-generation-notes.md
 ├─ design-intelligence.yaml
 └─ assets/
-   ├─ final/    # 승인된 게시용 결과와 미리보기
+   ├─ final/    # 승인된 게시용 결과와, 결함 발견 시 superseded로 보존되는 이력
    └─ source/   # 재편집에 필요한 생성 원본
 ```
 
@@ -42,5 +42,7 @@ npm run content:archive-design -- --source-root "C:\path\to\workspace" --manifes
 ## 승인과 디자인 인텔리전스
 
 - `status: approved`는 해당 프로젝트 결과물로 승인됐다는 뜻입니다.
+- 승인 뒤 사실·명령어 오류가 발견되면 기존 바이너리를 덮어쓰지 않고 `status: superseded`, `golden_candidate: false`로 강등합니다.
+- 교정본은 작업공간에서 다시 검증하고, 사용자 승인 뒤 새 revision slug로 보관합니다.
 - `golden_candidate: true`는 디자인 인텔리전스의 재사용 후보일 뿐 전역 취향 정본으로 자동 승격되지 않습니다.
 - 전역 골든·안정 취향 승격은 관제탑 또는 Brain CLI에서 사람 승인을 거친 뒤 별도로 기록합니다.
