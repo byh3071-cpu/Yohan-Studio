@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/guides/luna-max" },
   openGraph: {
     title: "Sol Advisor Luna · Max 설치·호환성 가이드",
-    description: "Windows v0.5.0 차단 이슈와 운영체제별 Bun 준비, Sol Advisor 설치와 Luna 요청문을 확인하세요.",
+    description: "Windows 공식 v0.5.0의 제한과 운영체제별 Bun 준비, Sol Advisor 설치와 Luna 요청문을 확인하세요.",
     url: "/guides/luna-max",
     type: "article",
   },
@@ -61,10 +61,10 @@ const ARTICLE_LD = {
   "@context": "https://schema.org",
   "@type": "TechArticle",
   headline: "Sol Advisor Luna · Max 설치·호환성 가이드",
-  description: "Sol Advisor v0.5.0의 Windows 차단 이슈와 운영체제별 설치·검증 절차를 정리합니다.",
+  description: "Sol Advisor v0.5.0의 Windows 공식판 제한과 운영체제별 설치·검증 절차를 정리합니다.",
   url: GUIDE_URL,
   inLanguage: "ko-KR",
-  dateModified: "2026-08-12",
+  dateModified: "2026-08-13",
 }
 
 type CommandBlockProps = {
@@ -123,7 +123,7 @@ export default function LunaMaxGuidePage() {
 
       <header className={styles.hero}>
         <div className={styles.heroCopy}>
-          <p className={styles.kicker}>YOHAN STUDIO GUIDE · 2026.08.12 기준</p>
+          <p className={styles.kicker}>YOHAN STUDIO GUIDE · 2026.08.13 기준</p>
           <h1>
             Codex 앱의 <span>Luna · Max</span>
             <br />연결 전 확인 가이드
@@ -151,9 +151,9 @@ export default function LunaMaxGuidePage() {
       </header>
 
       <div className={styles.notice} role="note">
-        <strong>Windows에서는 현재 중단해 주세요.</strong>
+        <strong>Windows 공식판은 현재 중단해 주세요.</strong>
         <p>
-          Sol Advisor v0.5.0은 Windows에서 <code>PLUGIN_DATA</code> 권한을 POSIX 방식으로 검사해 설정 MCP가 차단됩니다. ACL 방식으로 바꾼 PR #22도 실제 Codex Desktop의 실행 계정과 쓰기 권한 구조를 통과하지 못했습니다. maintainer가 호환 수정본을 확정하기 전에는 Windows용 Luna · Max 플러그인 경로를 정상 지원으로 안내하지 않습니다.
+          공식 v0.5.0은 Windows에서 <code>PLUGIN_DATA</code> 권한을 POSIX 방식으로 검사해 설정 MCP가 차단됩니다. PR #22 기반 로컬 수정본은 설정 저장과 검증을 통과했지만 공식 배포본이 아니며, 현재 Codex 호스트에는 필수 <code>wait_threads</code> 도구도 없습니다. maintainer가 수정본을 확정하고 Luna · Max 전체 경로가 통과하기 전에는 정상 지원으로 안내하지 않습니다.
         </p>
       </div>
 
@@ -194,8 +194,8 @@ export default function LunaMaxGuidePage() {
               <tr>
                 <th scope="row">Codex 앱 · Windows</th>
                 <td data-label="플러그인 설치">터미널에서 설치</td>
-                <td data-label="Native 경로"><span className={styles.unavailable}>v0.5.0 설정 차단</span></td>
-                <td data-label="Luna · Max 경로"><span className={styles.unavailable}>현재 사용 중단</span></td>
+                <td data-label="Native 경로"><span className={styles.unavailable}>공식 v0.5.0 설정 차단</span></td>
+                <td data-label="Luna · Max 경로"><span className={styles.unavailable}>필수 도구 5/6</span></td>
               </tr>
               <tr>
                 <th scope="row">Codex 앱 · macOS</th>
@@ -280,7 +280,7 @@ export default function LunaMaxGuidePage() {
                 <div>
                   <span className={styles.osLabel}>WINDOWS</span>
                   <strong>PowerShell에서 Bun 설치</strong>
-                  <p>Bun 설치 자체는 가능하지만 Sol Advisor v0.5.0 설정 MCP는 이슈 #20으로 차단됩니다. 현재는 설치 검증까지만 진행해 주세요.</p>
+                  <p>Bun 설치 자체는 가능하지만 공식 Sol Advisor v0.5.0 설정 MCP는 이슈 #20으로 차단됩니다. 현재는 설치 확인까지만 진행해 주세요.</p>
                 </div>
                 <CommandBlock command={BUN_INSTALL_WINDOWS} label="Windows용 Bun 설치 명령" />
               </div>
@@ -335,7 +335,7 @@ export default function LunaMaxGuidePage() {
 
           <GuideStep number="03" eyebrow="FIRST USE" title="새 작업에서 첫 설정을 완료해 주세요">
             <p className={styles.bodyText}>
-              지원되는 호스트에서 플러그인을 설치한 뒤 Codex 데스크톱 앱의 새 작업을 열어 주세요. Windows v0.5.0에서는 이 단계가 차단되므로 진행하지 않습니다.
+              지원되는 호스트에서 플러그인을 설치한 뒤 Codex 데스크톱 앱의 새 작업을 열어 주세요. Windows 공식 v0.5.0에서는 이 단계가 차단됩니다. 검증되지 않은 로컬 패치를 일반 설치 가이드로 사용하지 마세요.
             </p>
             <CommandBlock command={SETUP_PROMPT} label="Sol Advisor 첫 설정 요청문" />
             <ol className={styles.checklist}>
@@ -401,8 +401,8 @@ export default function LunaMaxGuidePage() {
           </div>
           <div>
             <span>04</span>
-            <h3>Windows에서 설정 도구가 보이지 않습니다</h3>
-            <p>Sol Advisor v0.5.0의 알려진 이슈 #20과 일치합니다. PR #22도 실제 Codex Desktop 데이터 폴더에서 차단되는 것을 확인했습니다. 권한 검사나 Windows ACL을 임의로 변경하지 말고 maintainer가 확정한 호환 수정본을 기다려 주세요.</p>
+            <h3>Windows에서 설정 또는 Luna 도구가 막힙니다</h3>
+            <p>설정 실패는 공식 v0.5.0의 이슈 #20과 일치할 수 있습니다. 설정이 통과해도 <code>wait_threads</code> 등 필수 앱 작업 도구 여섯 개가 모두 있어야 Luna 경로를 사용할 수 있습니다. Windows ACL을 임의로 변경하지 말고 maintainer가 확정한 수정본과 호스트 지원을 기다려 주세요.</p>
           </div>
         </div>
       </section>
@@ -411,7 +411,7 @@ export default function LunaMaxGuidePage() {
         <div>
           <p>검증 기준</p>
           <strong>Sol Advisor v0.5.0 · Codex CLI 0.147.0</strong>
-          <span>2026년 8월 13일 확인 · Windows 설치와 직접 Luna / Max 실행은 성공했지만, 공식 v0.5.0과 ACL 수정 PR #22 모두 플러그인 전체 경로를 통과하지 못했습니다.</span>
+          <span>2026년 8월 13일 확인 · PR #22 기반 로컬 수정본은 설정 저장·검증을 통과했습니다. 공식 v0.5.0은 아직 Windows에서 차단되며, 현재 호스트에는 wait_threads가 없어 Luna / Max 전체 경로는 통과하지 못했습니다.</span>
         </div>
         <div className={styles.footerLinks}>
           <a href="https://github.com/DannyMac180/sol-advisor" target="_blank" rel="noreferrer noopener">Sol Advisor 원본 ↗</a>

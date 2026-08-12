@@ -98,3 +98,23 @@
 - 실제 Codex Desktop의 플러그인 데이터 폴더에서는 MCP 실행 계정이 `CodexSandboxOnline`, 폴더 소유자가 로그인 사용자이며 `CodexSandboxUsers`에 `Modify`가 부여돼 PR의 소유자·읽기 전용 전제와 충돌했습니다.
 - 검사를 우회하거나 ACL을 바꾸지 않고 전역 적용을 중단했으며, 세부 증거는 `docs/content/reviews/codex-luna-max-guide-v2/smoke-test-report-v7.md`에 기록했습니다.
 - 교훈: 보안 패치의 자체 테스트가 통과해도 호스트가 실제로 제공하는 실행 계정과 데이터 디렉터리 ACL 계약을 연결한 통합 테스트가 없으면 호환성을 주장할 수 없습니다.
+
+## Windows 로컬 수정본 재시작 검증
+
+- PR #22 기반 로컬 브랜치에서 Codex 관리 플러그인 데이터 ACL 경계를 보완하고, Bun의 Node 호환 `execFileSync` 대신 `Bun.spawnSync`를 사용하도록 수정했습니다.
+- MCP 테스트 35개 PASS, 설정 상태 `ready`, 전역 논리 설정 읽기, `validate_configuration valid: true`를 실제 Codex 재시작 뒤 확인했습니다.
+- 동시에 여러 설정 도구를 부른 실험에서는 ACL 확인 타임아웃이 한 번 재발했지만 순차 읽기 3회는 모두 통과했습니다. 동시 호출 안정성은 잔여 위험으로 남겼습니다.
+- Luna 작업 경로의 필수 앱 도구는 6개 중 5개만 노출됐고 `wait_threads`가 없어 fail-closed로 중단했습니다.
+- 공식 이슈 #20과 PR #22가 아직 열려 있어 Windows 공식 배포 성공으로 표현하지 않고, 공개 페이지·카드뉴스·ManyChat 문안을 검증 대기 상태로 갱신했습니다.
+
+### 교훈
+
+MCP의 설정 계층이 통과해도 작업 오케스트레이션 계층이 통과한 것은 아닙니다. 보안 경계, 설정 저장, 호스트 도구 노출, 실제 모델·추론 메타데이터를 각각 독립된 게이트로 검증해야 합니다.
+
+### 추가 산출물 포인터
+
+- 스모크 보고서: `docs/content/reviews/codex-luna-max-guide-v2/smoke-test-report-v8.md`
+- 공개 가이드: `src/app/guides/luna-max/page.tsx`
+- 게시 문안: `docs/content/reviews/codex-luna-max-guide-v2/carousel-copy-v6.md`
+- 자동화 문안: `docs/content/reviews/codex-luna-max-guide-v2/manychat-draft-v7.md`
+- 범용 패턴: `docs/patterns/PAT-008-bun-windows-mcp-child-process.md`
