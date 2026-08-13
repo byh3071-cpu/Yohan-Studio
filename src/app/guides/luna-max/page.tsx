@@ -3,7 +3,6 @@ import Image from "next/image"
 import type { ReactNode } from "react"
 import { CopyButton } from "@/components/vhk/CopyButton"
 import { getSiteUrl } from "@/lib/siteUrl"
-import maxRingsImage from "../../../../docs/content/exports/codex-luna-max-guide/assets/source/max-rings.png"
 import styles from "./lunaMaxGuide.module.css"
 
 const BASE_URL = getSiteUrl()
@@ -143,7 +142,7 @@ export default function LunaMaxGuidePage() {
         <div className={styles.orbit} aria-hidden="true">
           <Image
             className={styles.orbitArt}
-            src={maxRingsImage}
+            src="/images/guides/luna-max/max-rings.png"
             alt=""
             fill
             priority
