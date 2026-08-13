@@ -23,6 +23,7 @@ export const SITE_CONFIG = {
     { path: "/diagnosis", desc: "AI'm Scan — AI 시대 1인 기업 진단 (7영역 21문항)" },
     { path: "/services", desc: "서비스 (컨설팅, 구축, 자동화)" },
     { path: "/vhk", desc: "VHK CLI 랜딩 (v1.3.0)" },
+    { path: "/guides/luna-max", desc: "Sol Advisor 설치와 Codex Luna · Max 작업 경로 단계별 가이드" },
   ] satisfies SitePage[],
   openSource: [
     { name: "NotionUIUX 위젯", desc: "무료 임베드 위젯 모음" },

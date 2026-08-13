@@ -87,6 +87,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/guides/luna-max`,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: `${BASE_URL}/open-source`,
       changeFrequency: "monthly",
       priority: 0.8,

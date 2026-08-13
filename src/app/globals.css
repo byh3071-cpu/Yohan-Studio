@@ -249,6 +249,12 @@ button {
   border-top: var(--border-w) solid var(--line);
 }
 
+/* 긴 전용 가이드에서는 flex-1이 만드는 모바일 하단 여백을 제거한다. */
+main:has(> .luna-max-guide-page) {
+  flex: none;
+  background: #09080d;
+}
+
 /* Header nav — PRD Phase 2: Blog / Showroom / Diagnosis / Services + menu. */
 header {
   position: relative;
