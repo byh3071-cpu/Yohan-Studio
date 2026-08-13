@@ -1,0 +1,110 @@
+제목
+Codex Luna/Max 사용법 — Sol Advisor 설치 가이드
+
+Codex에서 Sol이 설계하고 Luna가 구현하도록 나누는 커뮤니티 플러그인 Sol Advisor를 직접 설치하고 확인했다.
+
+다만 이 글은 설치 두 줄이면 무조건 끝난다는 성공담이 아니다. 2026년 8월 14일 기준 Windows 공개 원본에는 최초 설정을 막는 권한 판별 오류가 남아 있다.
+
+- 비전공자가 AI와 함께 만들고 직접 검증한 기록입니다. -
+
+결론부터 말하면 Luna는 모델이고, Max는 추론 강도다. Luna 작업 경로는 Sol이 현재 대화에서 설계한 일을 별도 Codex 작업에 보내고, 결과를 다시 검토하는 흐름이다.
+
+한눈에 요약
+
+- Sol Advisor는 OpenAI 공식 기능이 아닌 공개 커뮤니티 플러그인이다.
+- Luna 작업 경로는 Codex 앱의 GPT-5.6 Luna, Max 추론, 작업 도구가 모두 필요하다.
+- Windows 사용자는 설치 전에 이슈 #20과 수정 PR #22의 상태를 확인해야 한다.
+
+Luna, Max, 작업 경로는 각각 무엇인가?
+
+Luna는 실제 구현에 쓰는 모델 gpt-5.6-luna다. Max는 Luna 작업을 만들 때 함께 지정하는 추론 강도다.
+
+Luna 작업 경로(task lane)는 일반적인 네이티브 서브에이전트가 아니다. 사용자가 사이드바에서 볼 수 있는 별도 Codex 작업을 만들고, 현재 대화의 Sol이 그 결과를 검토한다.
+
+이 경로는 요청할 때마다 사용자가 다시 승인해야 한다. 플러그인을 설치했다고 자동으로 켜지지 않는다.
+
+설치 전에 필요한 것
+
+1. Agent Plugins v1을 지원하는 Codex
+2. Bun 런타임
+3. GPT-5.6 Luna와 Max 추론 사용 권한
+4. Codex 앱의 작업 생성·대기·읽기 도구
+
+하나라도 없으면 다른 모델로 자동 대체하지 않고 중단한다.
+
+1단계 — Bun 설치
+
+Windows PowerShell
+
+powershell -c "irm bun.sh/install.ps1|iex"
+
+macOS·Linux
+
+curl -fsSL https://bun.com/install | bash
+
+설치 뒤 새 터미널에서 확인한다.
+
+bun --version
+
+[이미지 삽입: 새 터미널에서 bun --version이 버전 번호를 반환하는 화면]
+
+2단계 — Sol Advisor 등록
+
+codex plugin marketplace add DannyMac180/sol-advisor --ref main
+codex plugin add sol-advisor@sol-advisor
+
+Windows PowerShell에서 codex.ps1 실행 정책 오류가 뜨면 codex 대신 codex.cmd를 사용한다.
+
+등록 뒤 Codex 앱을 완전히 종료하고 다시 연 다음 새 채팅을 만든다.
+
+3단계 — 최초 설정
+
+새 채팅에 아래 내용을 붙여넣는다.
+
+Use $sol-advisor:setup in this parent chat.
+Use Codex project scope.
+Enable the separate Luna/Max app-task lane.
+Save logical preferences only.
+Do not render or install native adapters.
+Ask me for the exact model IDs shown in /model.
+
+모든 프로젝트에 같은 설정을 쓰고 싶다면 project scope를 user scope로 바꾼다. 사용자 범위는 별도 동의가 한 번 더 필요하다.
+
+모델은 선택기나 /model에 실제로 보이는 ID를 그대로 복사한다. Luna 전용으로 쓴다면 네이티브 역할 설치 스크립트 install-agents.sh는 실행하지 않아도 된다.
+
+4단계 — 요청마다 승인
+
+Use $sol-advisor:orchestration for this feature.
+Use the Luna task lane for this feature.
+
+[여기에 만들 기능과 완료 조건을 적습니다.]
+
+두 번째 문장은 Luna 작업 경로를 쓸 요청마다 다시 넣어야 한다.
+
+어떻게 검증했나?
+
+내 로컬 Windows 환경에서는 수정 패치를 적용한 뒤 설정 ready, 구성 valid, Luna/Max 작업 생성부터 대기·결과 읽기까지 확인했다.
+
+반대로 공개 원본의 Windows 오류도 재현했다. 2026년 8월 14일 기준 이슈 #20과 수정 PR #22는 모두 열려 있다.
+
+[이미지 삽입: Codex 앱에서 별도 Luna 작업과 Max 설정을 확인할 수 있는 화면]
+
+Windows에서는 왜 바로 안 될 수 있나?
+
+공개 원본 v0.5.0은 Windows의 비공개 폴더 권한을 POSIX 권한 비트처럼 판별한다. Bun이 제한된 폴더도 0666으로 보고하면서 get_setup_status와 save_preferences가 거부될 수 있다.
+
+이때 보안 검사를 끄거나 폴더 권한을 무리하게 풀어 우회하면 안 된다. PR #22가 병합된 뒤 아래 명령으로 갱신하는 편이 안전하다.
+
+codex plugin marketplace upgrade sol-advisor
+codex plugin add sol-advisor@sol-advisor
+
+최신 설치 상태와 원본 링크
+
+전체 가이드는 아래 웹 원문에서 계속 갱신한다.
+
+https://yohanstudio.co/blog/codex-luna-max-sol-advisor-guide
+
+개발자가 아닌 사람이 AI와 함께 만드는 과정을 기록하고 있습니다.
+부족한 부분도 많지만, 하나씩 만들어가며 남기려고 합니다.
+
+#Codex #Luna #SolAdvisor #AI에이전트 #바이브코딩 #개발자동화
