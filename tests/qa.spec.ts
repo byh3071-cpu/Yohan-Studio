@@ -1,7 +1,16 @@
 import { test, expect } from "@playwright/test"
 import AxeBuilder from "@axe-core/playwright"
 
-const ROUTES = ["/", "/blog", "/learning-log", "/showroom", "/diagnosis", "/services", "/store"] as const
+const ROUTES = [
+  "/",
+  "/blog",
+  "/learning-log",
+  "/showroom",
+  "/diagnosis",
+  "/services",
+  "/store",
+  "/guides/luna-max",
+] as const
 
 const IGNORE_CONSOLE = [
   /favicon/i,
@@ -15,6 +24,11 @@ function collectConsoleErrors(page: import("@playwright/test").Page) {
     if (msg.type() === "error") errors.push(msg.text())
   })
   page.on("pageerror", (err) => errors.push(err.message))
+  page.on("response", (response) => {
+    if (response.status() >= 500) {
+      errors.push(`HTTP ${response.status()} ${response.url()}`)
+    }
+  })
   return errors
 }
 

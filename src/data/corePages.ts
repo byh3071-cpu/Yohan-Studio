@@ -25,6 +25,13 @@ const corePages: Omit<SearchDocument, "kind" | "badge">[] = [
     tags: ["VHK", "CLI", "바이브코딩", "npm"],
   },
   {
+    id: "page-guide-luna-max",
+    title: "Luna · Max 설치 가이드",
+    description: "Codex에서 Sol Advisor를 설치하고 Luna 작업 경로에 Max 추론을 적용하는 단계별 가이드.",
+    url: "/guides/luna-max",
+    tags: ["Luna", "Max", "Sol Advisor", "Codex", "설치가이드"],
+  },
+  {
     id: "page-open-source",
     title: "오픈소스",
     description: "노션 위젯 10종 · VHK CLI · 노션 미니 템플릿 — 공개 리소스 모음.",
