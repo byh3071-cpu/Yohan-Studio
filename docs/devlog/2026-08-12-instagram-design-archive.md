@@ -118,3 +118,23 @@ MCP의 설정 계층이 통과해도 작업 오케스트레이션 계층이 통�
 - 게시 문안: `docs/content/reviews/codex-luna-max-guide-v2/carousel-copy-v6.md`
 - 자동화 문안: `docs/content/reviews/codex-luna-max-guide-v2/manychat-draft-v7.md`
 - 범용 패턴: `docs/patterns/PAT-008-bun-windows-mcp-child-process.md`
+
+## Luna · Max 카드뉴스 게시·자동화 완료
+
+- 2026-08-13 `@yohanstudio_ai`에 carousel v6 8장을 게시했습니다.
+- 게시물: https://www.instagram.com/yohanstudio_ai/p/Db_mFmJkoW5/
+- 별도 테스트 계정의 `루나` 댓글에서 공개 자동 답글, Opening DM, 가이드 버튼 클릭을 확인했습니다.
+- 2026-08-14 ManyChat 실측은 `LIVE`, Sends 1, Clicks 1, CTR 100%입니다.
+- 실제 게시 원본과 문안·검증 기록은 `docs/content/exports/codex-luna-max-guide-v3/`에 승인본으로 보관했습니다.
+- 기존 v2 리뷰 문서의 `BLOCKED` 판정은 게시 전 기술 스모크 기록으로 유지하고 `STATUS.md`에서 현재 운영 상태와 구분했습니다.
+- Sol Advisor Luna task lane E2E는 `wait_threads` 누락으로 계속 미완료이며, 콘텐츠 운영 완료와 별도 상태입니다.
+
+### 교훈
+
+기술 제품의 전체 E2E가 막혀 있어도 한계와 중단 조건을 정확히 고지하는 안내 콘텐츠는 별도로 발행할 수 있습니다. 다만 “콘텐츠 자동화 통과”와 “소개한 기술의 전체 지원 통과”를 하나의 상태로 합치면 이후 에이전트가 잘못된 완료 판정을 내리므로 두 증거를 분리해 기록해야 합니다.
+
+### 추가 산출물 포인터
+
+- 승인본: `docs/content/exports/codex-luna-max-guide-v3/`
+- 운영 기록: `docs/content/exports/codex-luna-max-guide-v3/publication-record.md`
+- ManyChat 운영본: `docs/content/exports/codex-luna-max-guide-v3/manychat-live.md`
