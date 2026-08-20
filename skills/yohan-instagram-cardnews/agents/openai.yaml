@@ -1,0 +1,4 @@
+interface:
+  display_name: "요한 인스타 카드뉴스"
+  short_description: "카드뉴스 제작부터 모바일 검수·댓글 DM·보관까지 지원"
+  default_prompt: "$yohan-instagram-cardnews 스킬로 원문을 인스타 카드뉴스로 만들고 모바일 가독성까지 검수해줘."

@@ -29,6 +29,16 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - 새 글 작성, 노션 초안 변환, 네이버 원고 생성 시 `skills/yohan-dual-blog/SKILL.md`를 따른다.
 - 네이버 원고는 MDX 자동 변환본을 그대로 발행하지 말고 문단, 이미지 위치, 링크 중복을 다시 편집한다.
 
+## 디자인 산출물 보관
+
+- Yohan Studio용 카드뉴스·캐러셀·Reel·홍보 디자인의 실제 파일은 `docs/content/exports/<slug>/`가 소유한다.
+- Codex 임시 작업 폴더나 채팅 첨부 위치를 장기 정본으로 사용하지 않는다.
+- 승인된 최종본은 `assets/final/`, 재편집용 생성 원본은 `assets/source/`, 게시 문구·디자인 기록은 같은 export 폴더에 둔다.
+- 중간 실패본은 기본 보관하지 않는다. 비교 근거로 명시 승인된 경우에만 `assets/variants/`를 사용한다.
+- `design-intelligence.yaml`에는 프로젝트 상대경로·해시·승인 이유만 기록한다. PC 절대경로와 대용량 바이너리를 yohan-brain에 복제하지 않는다.
+- 새 디자인 산출물을 장기 보관할 때는 `docs/content/DESIGN-ARCHIVE.md`와 `npm run content:archive-design`을 사용한다.
+- `golden_candidate`를 전역 골든이나 안정 취향으로 자동 승격하지 않는다. 승격은 사람 승인 후 Brain 정본에서 별도로 기록한다.
+
 <!-- YOHAN-ROSTER-CARD:BEGIN (managed by yohan-brain ops/propagation — SoT를 고쳐라, 직접수정 금지) -->
 ## 상시 지휘자 — 라우팅 카드 (yohan ecosystem)
 
