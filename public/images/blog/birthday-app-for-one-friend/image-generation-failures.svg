@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">이미지 생성 반복에서 생긴 세 가지 실패 유형</title>
+  <desc id="desc">숫자 깨짐, 장면 일관성 붕괴, 행동과 시선 어긋남을 공개용 도형으로 재현한 구조도</desc>
+  <rect width="1600" height="900" fill="#F4F1EA"/>
+  <path d="M0 0h1600v18H0z" fill="#FF5C28"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="88" y="112" font-size="24" font-weight="800" letter-spacing="2">PUBLIC RECONSTRUCTION</text>
+    <text x="88" y="181" font-size="52" font-weight="900">말로 고칠수록, 다른 곳이 틀어졌다</text>
+    <text x="88" y="228" font-size="24" font-weight="600" fill="#5E5962">실제 사진과 캐릭터 대신 같은 병목만 도형으로 다시 만들었다.</text>
+  </g>
+
+  <g stroke="#151318" stroke-width="7">
+    <rect x="88" y="292" width="432" height="470" rx="24" fill="#FFFDF8"/>
+    <rect x="584" y="292" width="432" height="470" rx="24" fill="#FFFDF8"/>
+    <rect x="1080" y="292" width="432" height="470" rx="24" fill="#FFFDF8"/>
+  </g>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <g transform="translate(88 292)">
+      <rect x="0" y="0" width="432" height="72" rx="20" fill="#FFB8A2" stroke="#151318" stroke-width="7"/>
+      <text x="28" y="47" font-size="27" font-weight="900">01  날짜·숫자 깨짐</text>
+      <rect x="56" y="116" width="320" height="210" rx="16" fill="#F4F1EA" stroke="#151318" stroke-width="5"/>
+      <line x1="56" y1="174" x2="376" y2="174" stroke="#151318" stroke-width="5"/>
+      <circle cx="102" cy="145" r="10" fill="#FF5C28"/>
+      <circle cx="140" cy="145" r="10" fill="#151318"/>
+      <text x="91" y="269" font-size="64" font-weight="900">8 ? 2</text>
+      <path d="M92 294l248-80" stroke="#FF5C28" stroke-width="10"/>
+      <text x="56" y="385" font-size="23" font-weight="800">정확해야 할 정보가</text>
+      <text x="56" y="420" font-size="23" font-weight="800">그림 속에서 뭉개졌다.</text>
+    </g>
+    <g transform="translate(584 292)">
+      <rect x="0" y="0" width="432" height="72" rx="20" fill="#FFD86B" stroke="#151318" stroke-width="7"/>
+      <text x="28" y="47" font-size="27" font-weight="900">02  컷마다 달라짐</text>
+      <rect x="44" y="120" width="154" height="190" rx="14" fill="#F4F1EA" stroke="#151318" stroke-width="5"/>
+      <rect x="234" y="120" width="154" height="190" rx="14" fill="#F4F1EA" stroke="#151318" stroke-width="5"/>
+      <circle cx="121" cy="190" r="38" fill="#FF5C28" stroke="#151318" stroke-width="5"/>
+      <path d="M77 275c12-47 76-47 88 0" fill="#FFB8A2" stroke="#151318" stroke-width="5"/>
+      <rect x="268" y="151" width="86" height="82" rx="20" fill="#FFD86B" stroke="#151318" stroke-width="5"/>
+      <path d="M265 282l46-35 46 35" fill="#CFE9D8" stroke="#151318" stroke-width="5"/>
+      <text x="44" y="385" font-size="23" font-weight="800">같은 인물과 공간인데</text>
+      <text x="44" y="420" font-size="23" font-weight="800">다음 컷에서 바뀌었다.</text>
+    </g>
+    <g transform="translate(1080 292)">
+      <rect x="0" y="0" width="432" height="72" rx="20" fill="#CFE9D8" stroke="#151318" stroke-width="7"/>
+      <text x="28" y="47" font-size="27" font-weight="900">03  행동·시선 어긋남</text>
+      <circle cx="135" cy="190" r="58" fill="#FFFDF8" stroke="#151318" stroke-width="6"/>
+      <circle cx="118" cy="185" r="7" fill="#151318"/>
+      <circle cx="153" cy="185" r="7" fill="#151318"/>
+      <path d="M112 222q24 20 48 0" fill="none" stroke="#151318" stroke-width="5"/>
+      <path d="M224 208h120" stroke="#FF5C28" stroke-width="10"/>
+      <path d="M321 177l34 31-34 31" fill="none" stroke="#FF5C28" stroke-width="10"/>
+      <path d="M112 289q52-50 104 0" fill="#FFB8A2" stroke="#151318" stroke-width="6"/>
+      <path d="M184 271l92 32" stroke="#151318" stroke-width="12" stroke-linecap="round"/>
+      <text x="44" y="385" font-size="23" font-weight="800">시키려던 행동과 보는 곳이</text>
+      <text x="44" y="420" font-size="23" font-weight="800">한 장면 안에서 어긋났다.</text>
+    </g>
+  </g>
+  <rect x="88" y="803" width="1424" height="4" fill="#151318"/>
+  <text x="88" y="849" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="21" font-weight="700" fill="#5E5962">결론  더 긴 프롬프트보다, 의도를 직접 고정할 편집 화면이 필요했다.</text>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">14장짜리 생일 앱의 세 구간</title>
+  <desc id="desc">위장된 시작, 탐색과 장난, 생일 공개와 별도 선물의 세 구간으로 14장 흐름을 요약한 구조도</desc>
+  <rect width="1600" height="900" fill="#151318"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif">
+    <text x="84" y="104" font-size="24" font-weight="800" letter-spacing="2" fill="#FF7A4F">ONE PERSON · ONE LAPTOP · ONE SHOWING</text>
+    <text x="84" y="174" font-size="54" font-weight="900" fill="#FFFDF8">화면 14장이 하나의 경험이 되기까지</text>
+    <text x="84" y="220" font-size="23" font-weight="600" fill="#C9C3CA">개별 장면의 내용은 숨기고, 실제 상영본의 이야기 구조만 공개용으로 요약했다.</text>
+  </g>
+
+  <g stroke="#FFFDF8" stroke-width="5">
+    <rect x="84" y="292" width="414" height="360" rx="24" fill="#2B282E"/>
+    <rect x="530" y="292" width="620" height="360" rx="24" fill="#2B282E"/>
+    <rect x="1182" y="292" width="334" height="360" rx="24" fill="#2B282E"/>
+  </g>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif">
+    <g transform="translate(84 292)">
+      <rect x="0" y="0" width="414" height="78" rx="21" fill="#FFD86B"/>
+      <text x="30" y="51" font-size="27" font-weight="900" fill="#151318">1–4장 · 위장된 시작</text>
+      <text x="30" y="131" font-size="22" font-weight="700" fill="#FFFDF8">정체를 너무 빨리 밝히지 않는다.</text>
+      <text x="30" y="169" font-size="21" font-weight="600" fill="#C9C3CA">평범한 화면처럼 시작하고</text>
+      <text x="30" y="202" font-size="21" font-weight="600" fill="#C9C3CA">다음 행동을 자연스럽게 유도한다.</text>
+      <g transform="translate(30 244)" fill="#FFD86B" stroke="#FFFDF8" stroke-width="4">
+        <rect width="68" height="68" rx="12"/><rect x="84" width="68" height="68" rx="12"/><rect x="168" width="68" height="68" rx="12"/><rect x="252" width="68" height="68" rx="12"/>
+      </g>
+    </g>
+    <g transform="translate(530 292)">
+      <rect x="0" y="0" width="620" height="78" rx="21" fill="#FF8B68"/>
+      <text x="30" y="51" font-size="27" font-weight="900" fill="#151318">5–10장 · 탐색과 장난</text>
+      <text x="30" y="131" font-size="22" font-weight="700" fill="#FFFDF8">예상과 다른 행동에도 흐름은 계속된다.</text>
+      <text x="30" y="169" font-size="21" font-weight="600" fill="#C9C3CA">도움 경로, 대체 동작, 기다림의 시간을 넣어</text>
+      <text x="30" y="202" font-size="21" font-weight="600" fill="#C9C3CA">장난이 진행을 막는 실패가 되지 않게 했다.</text>
+      <g transform="translate(30 244)" fill="#FF8B68" stroke="#FFFDF8" stroke-width="4">
+        <rect width="68" height="68" rx="12"/><rect x="84" width="68" height="68" rx="12"/><rect x="168" width="68" height="68" rx="12"/><rect x="252" width="68" height="68" rx="12"/><rect x="336" width="68" height="68" rx="12"/><rect x="420" width="68" height="68" rx="12"/>
+      </g>
+    </g>
+    <g transform="translate(1182 292)">
+      <rect x="0" y="0" width="334" height="78" rx="21" fill="#CFE9D8"/>
+      <text x="26" y="51" font-size="26" font-weight="900" fill="#151318">11–14장 · 공개</text>
+      <text x="26" y="131" font-size="22" font-weight="700" fill="#FFFDF8">감정의 결론을 급하게</text>
+      <text x="26" y="165" font-size="22" font-weight="700" fill="#FFFDF8">소비하지 않는다.</text>
+      <text x="26" y="209" font-size="20" font-weight="600" fill="#C9C3CA">생일 공개 뒤 마지막 장에서</text>
+      <text x="26" y="240" font-size="20" font-weight="600" fill="#C9C3CA">별도 선물로 이어진다.</text>
+      <g transform="translate(26 270)" fill="#CFE9D8" stroke="#FFFDF8" stroke-width="4">
+        <rect width="58" height="58" rx="12"/><rect x="72" width="58" height="58" rx="12"/><rect x="144" width="58" height="58" rx="12"/><rect x="216" width="58" height="58" rx="12"/>
+      </g>
+    </g>
+  </g>
+  <path d="M499 472h30M1151 472h30" stroke="#FF5C28" stroke-width="10"/>
+  <path d="M510 451l24 21-24 21M1162 451l24 21-24 21" fill="none" stroke="#FF5C28" stroke-width="8"/>
+
+  <rect x="84" y="710" width="1432" height="112" rx="20" fill="#F4F1EA"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="118" y="757" font-size="20" font-weight="900">실제 결과</text>
+    <text x="118" y="793" font-size="25" font-weight="900">2026.08.02 · 실물 노트북 완주 → 친구는 예상보다 크게 감동했고, 나중에 울었다고 말했다.</text>
+  </g>
+</svg>

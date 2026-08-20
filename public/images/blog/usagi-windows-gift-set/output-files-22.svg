@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Windows 선물 세트를 구성하는 출력 파일 22개</title>
+  <desc id="desc">화살표 커서 2개, 대기 애니메이션 1개, 휴지통 아이콘 12개, 폴더 아이콘 6개, 작업 표시줄 아이콘 1개가 한 세트를 이룸</desc>
+  <rect width="1600" height="900" fill="#F4F1EA"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="80" y="94" font-size="24" font-weight="800" letter-spacing="2">ONE WINDOWS GIFT SET</text>
+    <text x="80" y="160" font-size="52" font-weight="900">22개 테마가 아니라, 한 세트의 22개 파일</text>
+    <text x="80" y="205" font-size="22" font-weight="650" fill="#5E5962">캐릭터 원본 없이 파일의 역할과 현재 저장소의 실제 개수만 표시했다.</text>
+  </g>
+  <g stroke="#151318" stroke-width="7">
+    <rect x="90" y="305" width="250" height="220" rx="24" fill="#FF8B68"/>
+    <rect x="382" y="305" width="250" height="220" rx="24" fill="#FFD86B"/>
+    <rect x="674" y="305" width="250" height="220" rx="24" fill="#CFE9D8"/>
+    <rect x="966" y="305" width="250" height="220" rx="24" fill="#D8D0F1"/>
+    <rect x="1258" y="305" width="250" height="220" rx="24" fill="#FFB8D1"/>
+  </g>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" text-anchor="middle" fill="#151318">
+    <g transform="translate(215 0)">
+      <path d="M-42 352l91 46-43 13-22 45z" fill="#FFFDF8" stroke="#151318" stroke-width="6" stroke-linejoin="round"/>
+      <text y="480" font-size="25" font-weight="900">화살표 커서</text><text y="585" font-size="76" font-weight="900">2</text>
+    </g>
+    <g transform="translate(507 0)">
+      <circle cy="400" r="46" fill="none" stroke="#151318" stroke-width="12" stroke-dasharray="62 26"/>
+      <text y="480" font-size="25" font-weight="900">대기 애니메이션</text><text y="585" font-size="76" font-weight="900">1</text>
+    </g>
+    <g transform="translate(799 0)">
+      <path d="M-42 373h84l-8 76h-68zM-56 356h112M-18 338h36" fill="#FFFDF8" stroke="#151318" stroke-width="6" stroke-linejoin="round"/>
+      <text y="480" font-size="25" font-weight="900">휴지통 아이콘</text><text y="585" font-size="76" font-weight="900">12</text>
+    </g>
+    <g transform="translate(1091 0)">
+      <path d="M-58 365h48l16 18h52v68h-116z" fill="#FFFDF8" stroke="#151318" stroke-width="6" stroke-linejoin="round"/>
+      <text y="480" font-size="25" font-weight="900">폴더 아이콘</text><text y="585" font-size="76" font-weight="900">6</text>
+    </g>
+    <g transform="translate(1383 0)">
+      <rect x="-55" y="354" width="110" height="96" rx="18" fill="#FFFDF8" stroke="#151318" stroke-width="6"/>
+      <rect x="-33" y="376" width="25" height="22" fill="#151318"/><rect x="8" y="376" width="25" height="22" fill="#151318"/><rect x="-33" y="411" width="25" height="22" fill="#151318"/><rect x="8" y="411" width="25" height="22" fill="#151318"/>
+      <text y="480" font-size="25" font-weight="900">작업 표시줄</text><text y="585" font-size="76" font-weight="900">1</text>
+    </g>
+  </g>
+  <path d="M215 637v66h1168v-66" fill="none" stroke="#151318" stroke-width="7"/>
+  <path d="M799 703v35" stroke="#151318" stroke-width="7"/>
+  <rect x="619" y="738" width="360" height="102" rx="18" fill="#151318"/>
+  <text x="799" y="781" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="21" font-weight="700" fill="#FFFDF8">한 번에 적용하고 복구하는</text>
+  <text x="799" y="817" text-anchor="middle" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="31" font-weight="900" fill="#FF7A4F">파일 22개 · 선물 세트 1개</text>
+</svg>
