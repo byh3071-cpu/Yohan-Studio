@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Windows 커서와 아이콘 인코더의 실제 셀프테스트 결과</title>
+  <desc id="desc">2026년 8월 3일 test-encoders 스크립트를 실행해 PNG, CUR, ICO, ANI, Windows 기본 커서 호환성 검사 14개가 모두 통과한 결과</desc>
+  <rect width="1600" height="900" fill="#F4F1EA"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="80" y="92" font-size="24" font-weight="800" letter-spacing="2">ACTUAL VERIFICATION · 2026.08.03</text>
+    <text x="80" y="158" font-size="52" font-weight="900">확장자만 바꾼 파일인지 직접 다시 읽어봤다</text>
+    <text x="80" y="204" font-size="22" font-weight="650" fill="#5E5962">원본 저장소의 읽기 전용 셀프테스트를 새로 실행한 결과다.</text>
+  </g>
+  <rect x="80" y="257" width="1440" height="546" rx="24" fill="#151318"/>
+  <rect x="80" y="257" width="1440" height="66" rx="23" fill="#2B282E"/>
+  <circle cx="120" cy="290" r="10" fill="#FF6B5F"/><circle cx="153" cy="290" r="10" fill="#FFD86B"/><circle cx="186" cy="290" r="10" fill="#55C783"/>
+  <text x="230" y="299" font-family="Consolas, 'Courier New', monospace" font-size="21" font-weight="700" fill="#C9C3CA">node build/test-encoders.mjs</text>
+
+  <g font-family="Consolas, 'Noto Sans KR', monospace" font-size="20" fill="#E9E5EA">
+    <g transform="translate(118 374)">
+      <text y="0" fill="#65D692">●</text><text x="32" y="0">PNG 라운드트립 32·48·64px — 픽셀 완전 일치</text>
+      <text y="47" fill="#65D692">●</text><text x="32" y="47">PNG 필터 0–4 · RGB · gray 디코드</text>
+      <text y="94" fill="#65D692">●</text><text x="32" y="94">PNG 인터레이스 — 명시적 오류 처리</text>
+      <text y="141" fill="#65D692">●</text><text x="32" y="141">CUR 치수 · 핫스팟 · bitCount · AND 마스크</text>
+      <text y="188" fill="#65D692">●</text><text x="32" y="188">CUR BGRA bottom-up XOR · 마스크 비트</text>
+      <text y="235" fill="#65D692">●</text><text x="32" y="235">ICO 16–256px 다중 크기 파싱</text>
+    </g>
+    <g transform="translate(824 374)">
+      <text y="0" fill="#65D692">●</text><text x="32" y="0">ANI 프레임 · 순서 · 속도 라운드트립</text>
+      <text y="47" fill="#65D692">●</text><text x="32" y="47">ANI RIFF 홀수 길이 패딩 규칙</text>
+      <text y="94" fill="#65D692">●</text><text x="32" y="94">Windows aero_arrow.cur 파싱</text>
+      <text y="141" fill="#65D692">●</text><text x="32" y="141">Windows aero_busy.ani 파싱</text>
+      <text y="188" fill="#65D692">●</text><text x="32" y="188">개별 검사 14개 · 실패 0개</text>
+    </g>
+  </g>
+  <line x1="118" y1="670" x2="1482" y2="670" stroke="#4C474F" stroke-width="3"/>
+  <rect x="118" y="703" width="1364" height="66" rx="12" fill="#20372A"/>
+  <text x="150" y="746" font-family="Consolas, 'Courier New', monospace" font-size="28" font-weight="900" fill="#65D692">ALL PASS</text>
+  <text x="1450" y="744" text-anchor="end" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="20" font-weight="700" fill="#A9DDB9">exit 0 · 읽기 전용 실행</text>
+  <text x="80" y="857" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="21" font-weight="800" fill="#5E5962">검증 범위는 인코더와 파일 구조다. 캐릭터 원본이나 개인 화면은 이 증거에 포함하지 않았다.</text>
+</svg>

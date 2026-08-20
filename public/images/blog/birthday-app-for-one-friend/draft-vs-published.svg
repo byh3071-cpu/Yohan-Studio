@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">브라우저 초안과 전달 가능한 공식 콘티 비교</title>
+  <desc id="desc">브라우저 내부 저장 초안은 새 노트북에 전달되지 않지만 공식 콘티와 에셋 ID를 Git에 고정하면 동일한 14장을 복원하는 구조</desc>
+  <rect width="1600" height="900" fill="#F4F1EA"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="80" y="92" font-size="24" font-weight="800" letter-spacing="2">DELIVERY GAP</text>
+    <text x="80" y="157" font-size="50" font-weight="900">내 화면에서 보이는 것 ≠ 전달본에 있는 것</text>
+  </g>
+
+  <rect x="80" y="218" width="1440" height="252" rx="26" fill="#FFD9D0" stroke="#151318" stroke-width="7"/>
+  <rect x="80" y="520" width="1440" height="292" rx="26" fill="#DDEEDF" stroke="#151318" stroke-width="7"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <text x="116" y="267" font-size="24" font-weight="900">실패 경로 · 브라우저 안에만 저장</text>
+    <text x="116" y="569" font-size="24" font-weight="900">해결 경로 · 공식 콘티와 자산 연결을 함께 고정</text>
+  </g>
+
+  <g stroke="#151318" stroke-width="6" fill="#FFFDF8">
+    <rect x="124" y="305" width="270" height="118" rx="15"/>
+    <rect x="665" y="305" width="270" height="118" rx="15" stroke-dasharray="15 12"/>
+    <rect x="1206" y="305" width="270" height="118" rx="15"/>
+  </g>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" text-anchor="middle" fill="#151318">
+    <text x="259" y="352" font-size="24" font-weight="900">내 브라우저</text>
+    <text x="259" y="390" font-size="20" font-weight="700">로컬 초안 저장</text>
+    <text x="800" y="352" font-size="24" font-weight="900">전달 과정</text>
+    <text x="800" y="390" font-size="20" font-weight="700">초안은 따라가지 않음</text>
+    <text x="1341" y="352" font-size="24" font-weight="900">친구 노트북</text>
+    <text x="1341" y="390" font-size="20" font-weight="700">이전 콘티가 열림</text>
+  </g>
+  <path d="M410 364h215M951 364h215" stroke="#151318" stroke-width="7" stroke-dasharray="15 13"/>
+  <path d="M1133 340l34 24-34 24" fill="none" stroke="#151318" stroke-width="7"/>
+  <circle cx="800" cy="364" r="36" fill="#FF5C28" stroke="#151318" stroke-width="6"/>
+  <path d="M784 348l32 32m0-32l-32 32" stroke="#FFFDF8" stroke-width="8" stroke-linecap="round"/>
+
+  <g stroke="#151318" stroke-width="6" fill="#FFFDF8">
+    <rect x="124" y="610" width="300" height="146" rx="15"/>
+    <rect x="650" y="610" width="300" height="146" rx="15"/>
+    <rect x="1176" y="610" width="300" height="146" rx="15"/>
+  </g>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" text-anchor="middle" fill="#151318">
+    <text x="274" y="655" font-size="24" font-weight="900">공식 콘티</text>
+    <text x="274" y="691" font-size="20" font-weight="700">장면 순서 + 행동 규칙</text>
+    <text x="274" y="725" font-size="20" font-weight="700" fill="#FF5C28">Git에 기록</text>
+    <text x="800" y="655" font-size="24" font-weight="900">안정적인 에셋 ID</text>
+    <text x="800" y="691" font-size="20" font-weight="700">파일 위치가 바뀌어도</text>
+    <text x="800" y="725" font-size="20" font-weight="700">같은 자산을 연결</text>
+    <text x="1326" y="655" font-size="24" font-weight="900">새 환경</text>
+    <text x="1326" y="691" font-size="20" font-weight="700">같은 14장 복원</text>
+    <text x="1326" y="725" font-size="20" font-weight="700" fill="#18864B">처음부터 끝까지 실행</text>
+  </g>
+  <path d="M444 683h166M970 683h166" stroke="#FF5C28" stroke-width="9"/>
+  <path d="M580 655l35 28-35 28M1106 655l35 28-35 28" fill="none" stroke="#FF5C28" stroke-width="9"/>
+  <rect x="80" y="842" width="1440" height="4" fill="#151318"/>
+  <text x="80" y="879" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="20" font-weight="800" fill="#5E5962">완료 기준은 ‘내 브라우저에서 보임’이 아니라 ‘새 환경에서 같은 경험이 다시 만들어짐’이었다.</text>
+</svg>

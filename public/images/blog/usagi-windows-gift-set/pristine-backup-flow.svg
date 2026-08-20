@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">반복 적용 백업 실패와 최초 상태 백업 비교</title>
+  <desc id="desc">적용 때마다 백업을 덮어쓰면 꾸민 상태가 백업되어 원복에 실패하지만 최초 Windows 상태를 별도로 보존하면 정확히 복구할 수 있음</desc>
+  <rect width="1600" height="900" fill="#151318"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif">
+    <text x="82" y="99" font-size="24" font-weight="800" letter-spacing="2" fill="#FF7A4F">RESTORE IS PART OF THE GIFT</text>
+    <text x="82" y="166" font-size="52" font-weight="900" fill="#FFFDF8">적용보다 어려웠던 건, 정확히 되돌리는 일이었다</text>
+  </g>
+
+  <rect x="82" y="230" width="700" height="560" rx="28" fill="#F4F1EA" stroke="#FFFDF8" stroke-width="6"/>
+  <rect x="818" y="230" width="700" height="560" rx="28" fill="#F4F1EA" stroke="#FFFDF8" stroke-width="6"/>
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" fill="#151318">
+    <rect x="82" y="230" width="700" height="76" rx="24" fill="#FFB8A2"/>
+    <text x="116" y="280" font-size="28" font-weight="900">실패 · 적용할 때마다 백업 덮어쓰기</text>
+    <rect x="818" y="230" width="700" height="76" rx="24" fill="#CFE9D8"/>
+    <text x="852" y="280" font-size="28" font-weight="900">수정 · 최초 상태를 한 번만 별도 보존</text>
+  </g>
+
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" text-anchor="middle" fill="#151318" stroke="#151318" stroke-width="5">
+    <g transform="translate(130 354)">
+      <rect width="170" height="112" rx="16" fill="#FFFDF8"/><text x="85" y="48" font-size="20" font-weight="900" stroke="none">최초 Windows</text><text x="85" y="79" font-size="18" font-weight="700" stroke="none">기본 상태</text>
+    </g>
+    <g transform="translate(350 354)">
+      <rect width="170" height="112" rx="16" fill="#FFD86B"/><text x="85" y="48" font-size="20" font-weight="900" stroke="none">1차 적용</text><text x="85" y="79" font-size="18" font-weight="700" stroke="none">꾸민 상태 A</text>
+    </g>
+    <g transform="translate(570 354)">
+      <rect width="170" height="112" rx="16" fill="#FF8B68"/><text x="85" y="48" font-size="20" font-weight="900" stroke="none">2차 적용</text><text x="85" y="79" font-size="18" font-weight="700" stroke="none">꾸민 상태 B</text>
+    </g>
+    <g transform="translate(202 585)">
+      <rect width="460" height="122" rx="16" fill="#FFD9D0"/><text x="230" y="49" font-size="21" font-weight="900" stroke="none">백업이 A 또는 B로 바뀜</text><text x="230" y="83" font-size="19" font-weight="750" stroke="none">원복해도 꾸민 흔적이 남는다</text>
+    </g>
+  </g>
+  <path d="M302 410h38M522 410h38" stroke="#FF5C28" stroke-width="8"/><path d="M322 390l24 20-24 20M542 390l24 20-24 20" fill="none" stroke="#FF5C28" stroke-width="8"/>
+  <path d="M655 472v90M655 562H432v13" fill="none" stroke="#FF5C28" stroke-width="8" stroke-dasharray="13 11"/>
+  <circle cx="690" cy="522" r="26" fill="#FF5C28"/><path d="M678 510l24 24m0-24l-24 24" stroke="#FFFDF8" stroke-width="7" stroke-linecap="round"/>
+
+  <g font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" text-anchor="middle" fill="#151318" stroke="#151318" stroke-width="5">
+    <g transform="translate(860 354)">
+      <rect width="250" height="112" rx="16" fill="#FFFDF8"/><text x="125" y="47" font-size="20" font-weight="900" stroke="none">최초 Windows 상태</text><text x="125" y="79" font-size="18" font-weight="700" stroke="none">pristine backup</text>
+    </g>
+    <g transform="translate(1226 354)">
+      <rect width="250" height="112" rx="16" fill="#FFD86B"/><text x="125" y="47" font-size="20" font-weight="900" stroke="none">작업용 상태</text><text x="125" y="79" font-size="18" font-weight="700" stroke="none">여러 번 적용 가능</text>
+    </g>
+    <g transform="translate(1043 585)">
+      <rect width="250" height="122" rx="16" fill="#CFE9D8"/><text x="125" y="49" font-size="21" font-weight="900" stroke="none">정확한 전체 원복</text><text x="125" y="84" font-size="19" font-weight="750" stroke="none">최초 상태로 복구</text>
+    </g>
+  </g>
+  <path d="M1118 410h98" stroke="#FF5C28" stroke-width="8"/><path d="M1196 390l24 20-24 20" fill="none" stroke="#FF5C28" stroke-width="8"/>
+  <path d="M985 476v109M1351 476v61q0 48-48 48h-10" fill="none" stroke="#18864B" stroke-width="8"/>
+  <path d="M967 559l18 28 18-28M1316 567l-27 18 27 18" fill="none" stroke="#18864B" stroke-width="8"/>
+  <circle cx="1434" cy="694" r="30" fill="#18864B"/><path d="M1420 694l10 12 22-29" fill="none" stroke="#FFFDF8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="82" y="852" font-family="Pretendard, 'Noto Sans KR', Arial, sans-serif" font-size="22" font-weight="800" fill="#C9C3CA">선물의 완료 조건: 원하는 모습으로 바꾸기 + 마음이 바뀌면 처음 상태로 돌아가기</text>
+</svg>
