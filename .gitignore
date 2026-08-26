@@ -95,3 +95,6 @@ docs/content/naver/_tmp-*.md
 
 # 네이버 발행: .html은 .md에서 naver-to-html.mjs로 재생성 (소스 .md만 커밋)
 docs/content/naver/*.html
+
+# 벤더 도구 로컬 설정 — 기기마다 다르다 (ASSETS.md §2.1)
+.codex/

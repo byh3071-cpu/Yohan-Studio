@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Birthday App — Public Shooting Demo</title>
+    <style>
+      :root {
+        --cream: #f4f1ea;
+        --paper: #fffdf8;
+        --ink: #0a0a0a;
+        --orange: #ff5c28;
+        --line: #d8d3ca;
+        --muted: #6b665e;
+        --display: "Arial Black", "Noto Sans KR", "Malgun Gothic", sans-serif;
+        --body: "Noto Sans KR", "Malgun Gothic", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--ink);
+        color: var(--ink);
+        font-family: var(--body);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .setup {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        background:
+          linear-gradient(90deg, transparent 49.9%, rgba(255, 92, 40, 0.13) 50%, transparent 50.1%),
+          var(--cream);
+      }
+
+      .setup[hidden] {
+        display: none;
+      }
+
+      .setup-card {
+        width: min(760px, 100%);
+        border: 2px solid var(--ink);
+        background: var(--paper);
+        box-shadow: 18px 18px 0 var(--orange);
+      }
+
+      .setup-head,
+      .setup-body,
+      .setup-actions {
+        padding: 24px 28px;
+      }
+
+      .setup-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 2px solid var(--ink);
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+
+      .setup h1 {
+        max-width: 620px;
+        margin: 0 0 20px;
+        font-family: var(--display);
+        font-size: clamp(36px, 6vw, 68px);
+        line-height: 1.04;
+        letter-spacing: -0.055em;
+      }
+
+      .setup p {
+        max-width: 580px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .safe-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 26px;
+      }
+
+      .safe-item {
+        border: 1px solid var(--line);
+        padding: 13px 14px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .safe-item::before {
+        content: "✓";
+        margin-right: 8px;
+        color: var(--orange);
+      }
+
+      .setup-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-top: 1px solid var(--line);
+      }
+
+      .keys {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .start-button {
+        min-width: 220px;
+        border: 2px solid var(--ink);
+        padding: 15px 20px;
+        background: var(--orange);
+        color: var(--ink);
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .start-button:focus-visible {
+        outline: 4px solid var(--orange);
+        outline-offset: 4px;
+      }
+
+      .demo {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        isolation: isolate;
+        background: var(--cream);
+      }
+
+      .topbar {
+        position: fixed;
+        z-index: 15;
+        top: 0;
+        right: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 32px;
+        height: 72px;
+        padding: 0 clamp(24px, 4vw, 64px);
+        border-bottom: 1px solid rgba(10, 10, 10, 0.2);
+        color: currentColor;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        transition: color 280ms ease, border-color 280ms ease;
+      }
+
+      .scene-count {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .signal-track {
+        position: fixed;
+        z-index: 16;
+        top: 69px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: transparent;
+      }
+
+      .signal-progress {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 16.666%;
+        background: var(--orange);
+        transition: width 460ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .signal-progress::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: -8px;
+        width: 16px;
+        height: 16px;
+        border: 3px solid var(--ink);
+        background: var(--orange);
+        transform: translateY(-50%);
+      }
+
+      .stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 112px clamp(28px, 6vw, 96px) 48px;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 300ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .scene.is-active {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .scene.dark {
+        background: var(--ink);
+        color: var(--cream);
+      }
+
+      .scene.orange {
+        background: var(--orange);
+        color: var(--ink);
+      }
+
+      .scene.paper {
+        background: var(--cream);
+        color: var(--ink);
+      }
+
+      .scene-inner {
+        width: min(1180px, 100%);
+      }
+
+      .eyebrow {
+        margin-bottom: 20px;
+        color: var(--orange);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .orange .eyebrow {
+        color: var(--ink);
+      }
+
+      .title {
+        margin: 0;
+        font-family: var(--display);
+        font-size: clamp(54px, 8vw, 118px);
+        line-height: 0.98;
+        letter-spacing: -0.065em;
+        text-wrap: balance;
+      }
+
+      .subtitle {
+        max-width: 680px;
+        margin: 28px 0 0;
+        font-size: clamp(17px, 2vw, 25px);
+        line-height: 1.58;
+        text-wrap: balance;
+      }
+
+      .scene-one .scene-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        align-items: end;
+        gap: clamp(42px, 7vw, 110px);
+      }
+
+      .status-panel {
+        border: 1px solid rgba(244, 241, 234, 0.4);
+        background: #111;
+      }
+
+      .status-row {
+        display: grid;
+        grid-template-columns: 90px 1fr auto;
+        gap: 16px;
+        padding: 17px 20px;
+        border-bottom: 1px solid rgba(244, 241, 234, 0.18);
+        font-size: 13px;
+      }
+
+      .status-row:last-child {
+        border-bottom: 0;
+      }
+
+      .status-row span:first-child {
+        color: #aaa49a;
+      }
+
+      .status-ok {
+        color: var(--orange);
+        font-weight: 900;
+      }
+
+      .clue-layout {
+        display: grid;
+        grid-template-columns: 0.8fr 1.2fr;
+        align-items: center;
+        gap: clamp(48px, 8vw, 120px);
+      }
+
+      .clue-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .clue-card {
+        aspect-ratio: 0.78;
+        display: grid;
+        place-items: end start;
+        border: 2px solid var(--ink);
+        padding: 18px;
+        background: var(--paper);
+        font-family: var(--display);
+        font-size: clamp(20px, 2.2vw, 34px);
+        letter-spacing: -0.04em;
+      }
+
+      .clue-card:nth-child(2) {
+        color: var(--paper);
+        background: var(--ink);
+        transform: translateY(-24px);
+      }
+
+      .clue-card:nth-child(3) {
+        background: var(--orange);
+      }
+
+      .editor-layout {
+        display: grid;
+        grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+        align-items: center;
+        gap: clamp(44px, 7vw, 100px);
+      }
+
+      .editor-stack {
+        position: relative;
+        height: 380px;
+      }
+
+      .editor-card {
+        position: absolute;
+        width: min(520px, 90%);
+        border: 2px solid currentColor;
+        padding: 25px 28px;
+        background: var(--orange);
+        color: var(--ink);
+      }
+
+      .editor-card:nth-child(1) {
+        top: 0;
+        left: 0;
+      }
+
+      .editor-card:nth-child(2) {
+        top: 102px;
+        left: 7%;
+        background: var(--paper);
+      }
+
+      .editor-card:nth-child(3) {
+        top: 204px;
+        left: 14%;
+        background: var(--ink);
+        color: var(--cream);
+      }
+
+      .editor-label {
+        display: block;
+        margin-bottom: 9px;
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+      }
+
+      .editor-value {
+        font-family: var(--display);
+        font-size: clamp(23px, 2.5vw, 37px);
+        letter-spacing: -0.04em;
+      }
+
+      .birthday-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+        gap: clamp(50px, 8vw, 120px);
+      }
+
+      .cake-wrap {
+        position: relative;
+        height: 420px;
+      }
+
+      .cake {
+        position: absolute;
+        bottom: 35px;
+        left: 50%;
+        width: min(420px, 90%);
+        height: 210px;
+        border: 4px solid var(--ink);
+        background: var(--cream);
+        transform: translateX(-50%);
+      }
+
+      .cake::before {
+        content: "";
+        position: absolute;
+        top: 48px;
+        right: -4px;
+        left: -4px;
+        height: 26px;
+        border-top: 4px solid var(--ink);
+        border-bottom: 4px solid var(--ink);
+        background: var(--orange);
+      }
+
+      .candle {
+        position: absolute;
+        bottom: 245px;
+        width: 15px;
+        height: 95px;
+        border: 3px solid var(--ink);
+        background: var(--cream);
+      }
+
+      .candle::before {
+        content: "";
+        position: absolute;
+        top: -38px;
+        left: 50%;
+        width: 19px;
+        height: 29px;
+        border: 3px solid var(--ink);
+        border-radius: 50% 50% 50% 0;
+        background: var(--orange);
+        transform: translateX(-50%) rotate(-45deg);
+        animation: flame 800ms ease-in-out infinite alternate;
+      }
+
+      .candle.one { left: 36%; }
+      .candle.two { left: 49%; height: 120px; }
+      .candle.three { left: 62%; }
+
+      .confetti {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        top: -40px;
+        width: 12px;
+        height: 26px;
+        border: 2px solid var(--ink);
+        animation: fall var(--duration) linear var(--delay) infinite;
+      }
+
+      .letter-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(360px, 0.75fr);
+        align-items: center;
+        gap: clamp(48px, 8vw, 120px);
+      }
+
+      .letter {
+        position: relative;
+        min-height: 390px;
+        border: 2px solid var(--ink);
+        padding: 48px;
+        background: var(--paper);
+        box-shadow: 14px 14px 0 var(--orange);
+        transform: rotate(1.2deg);
+      }
+
+      .letter::before {
+        content: "FOR ONE PERSON";
+        display: block;
+        margin-bottom: 44px;
+        color: var(--orange);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+      }
+
+      .letter p {
+        margin: 0;
+        font-family: var(--display);
+        font-size: clamp(28px, 3.2vw, 48px);
+        line-height: 1.25;
+        letter-spacing: -0.05em;
+      }
+
+      .final-layout {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: end;
+        gap: 70px;
+      }
+
+      .final-mark {
+        display: grid;
+        place-items: center;
+        width: clamp(130px, 16vw, 220px);
+        aspect-ratio: 1;
+        border: 4px solid var(--ink);
+        background: var(--orange);
+        font-family: var(--display);
+        font-size: clamp(28px, 4vw, 56px);
+        transform: rotate(3deg);
+      }
+
+      .transition-sweep {
+        position: fixed;
+        z-index: 25;
+        inset: 0;
+        background: var(--orange);
+        pointer-events: none;
+        transform: translateX(-102%);
+      }
+
+      .transition-sweep.is-moving {
+        animation: sweep 500ms cubic-bezier(0.65, 0, 0.35, 1);
+      }
+
+      body.cursor-hidden {
+        cursor: none;
+      }
+
+      @keyframes sweep {
+        0% { transform: translateX(-102%); }
+        48%, 52% { transform: translateX(0); }
+        100% { transform: translateX(102%); }
+      }
+
+      @keyframes flame {
+        from { transform: translateX(-50%) rotate(-48deg) scale(0.92); }
+        to { transform: translateX(-50%) rotate(-40deg) scale(1.08); }
+      }
+
+      @keyframes fall {
+        from { transform: translate3d(0, -20px, 0) rotate(0deg); }
+        to { transform: translate3d(var(--drift), 115vh, 0) rotate(560deg); }
+      }
+
+      @media (max-width: 760px) {
+        .safe-list {
+          grid-template-columns: 1fr;
+        }
+
+        .setup-actions {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .scene-one .scene-inner,
+        .clue-layout,
+        .editor-layout,
+        .birthday-layout,
+        .letter-layout,
+        .final-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .status-panel,
+        .clue-grid,
+        .editor-stack,
+        .cake-wrap,
+        .letter,
+        .final-mark {
+          display: none;
+        }
+
+        .title {
+          font-size: clamp(48px, 15vw, 76px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="setup" id="setup" aria-labelledby="setup-title">
+      <div class="setup-card">
+        <div class="setup-head">
+          <span>YOHAN STUDIO · PUBLIC DEMO</span>
+          <span>6 SCENES</span>
+        </div>
+        <div class="setup-body">
+          <h1 id="setup-title">촬영을 위한 안전한 생일 앱 데모</h1>
+          <p>개인용 원본을 복사하지 않고 이야기의 흐름만 새로 만들었어. 촬영 모드를 시작한 뒤 화면을 한 번 누를 때마다 다음 장면으로 넘어가.</p>
+          <div class="safe-list" aria-label="공개 안전 기준">
+            <div class="safe-item">개인정보 없음</div>
+            <div class="safe-item">캐릭터 자산 없음</div>
+            <div class="safe-item">외부 요청 없음</div>
+          </div>
+        </div>
+        <div class="setup-actions">
+          <div class="keys">Space·→ 다음 장면 · ← 이전 · R 처음부터</div>
+          <button class="start-button" id="start-button" type="button">촬영 모드 시작</button>
+        </div>
+      </div>
+    </section>
+
+    <main class="demo" id="demo" aria-live="polite">
+      <header class="topbar">
+        <span>PUBLIC BIRTHDAY EXPERIENCE</span>
+        <span class="scene-count" id="scene-count">01 / 06</span>
+      </header>
+      <div class="signal-track" aria-hidden="true">
+        <div class="signal-progress" id="signal-progress"></div>
+      </div>
+
+      <div class="stage" id="stage">
+        <section class="scene dark scene-one is-active" data-scene="0">
+          <div class="scene-inner">
+            <div>
+              <div class="eyebrow">Scene 01 · disguised start</div>
+              <h2 class="title">평범한 테스트처럼 시작합니다.</h2>
+              <p class="subtitle">한 번만 보여줄 화면이라도 처음부터 정체를 알려주지 않았어.</p>
+            </div>
+            <div class="status-panel" aria-label="시스템 준비 상태">
+              <div class="status-row"><span>DISPLAY</span><strong>READY</strong><span class="status-ok">●</span></div>
+              <div class="status-row"><span>AUDIO</span><strong>READY</strong><span class="status-ok">●</span></div>
+              <div class="status-row"><span>STORY</span><strong>HIDDEN</strong><span class="status-ok">●</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene paper" data-scene="1">
+          <div class="scene-inner clue-layout">
+            <div>
+              <div class="eyebrow">Scene 02 · playful search</div>
+              <h2 class="title">화면 속 단서를 찾는 중.</h2>
+              <p class="subtitle">예쁜 화면보다 다음 행동이 자연스럽게 이어지는지가 더 어려웠어.</p>
+            </div>
+            <div class="clue-grid" aria-hidden="true">
+              <div class="clue-card">기억</div>
+              <div class="clue-card">장난</div>
+              <div class="clue-card">편지</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene dark" data-scene="2">
+          <div class="scene-inner editor-layout">
+            <div>
+              <div class="eyebrow">Scene 03 · storyboard editor</div>
+              <h2 class="title">의도를 직접 놓았습니다.</h2>
+              <p class="subtitle">이미지를 더 뽑는 대신 장면과 행동, 반응을 구조로 만들었어.</p>
+            </div>
+            <div class="editor-stack" aria-hidden="true">
+              <div class="editor-card"><span class="editor-label">SCENE</span><span class="editor-value">먼저 보이는 것</span></div>
+              <div class="editor-card"><span class="editor-label">ACTION</span><span class="editor-value">다음에 할 행동</span></div>
+              <div class="editor-card"><span class="editor-label">REACTION</span><span class="editor-value">성공과 실패의 반응</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene orange" data-scene="3">
+          <div class="confetti" id="confetti" aria-hidden="true"></div>
+          <div class="scene-inner birthday-layout">
+            <div>
+              <div class="eyebrow">Scene 04 · reveal</div>
+              <h2 class="title">사실 오늘은, 생일 축하 화면입니다.</h2>
+              <p class="subtitle">숨겨 둔 이유와 장면이 마지막에서 하나로 이어집니다.</p>
+            </div>
+            <div class="cake-wrap" aria-label="세 개의 촛불이 켜진 생일 케이크 그림">
+              <div class="candle one"></div>
+              <div class="candle two"></div>
+              <div class="candle three"></div>
+              <div class="cake"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene paper" data-scene="4">
+          <div class="scene-inner letter-layout">
+            <div>
+              <div class="eyebrow">Scene 05 · the letter</div>
+              <h2 class="title">마지막에는 짧은 마음을 남겼습니다.</h2>
+              <p class="subtitle">실제 편지와 이름은 이 공개 데모에 들어 있지 않아.</p>
+            </div>
+            <article class="letter" aria-label="공개용 편지">
+              <p>오늘의 좋은 순간을 오래 기억할 수 있기를.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="scene paper" data-scene="5">
+          <div class="scene-inner final-layout">
+            <div>
+              <div class="eyebrow">Scene 06 · complete</div>
+              <h2 class="title">작은 아이디어를 실제 노트북에서 끝까지.</h2>
+              <p class="subtitle">Yohan Studio · 만들고 검증한 기록</p>
+            </div>
+            <div class="final-mark" aria-hidden="true">END</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="transition-sweep" id="transition-sweep" aria-hidden="true"></div>
+    </main>
+
+    <script>
+      const setup = document.getElementById("setup")
+      const startButton = document.getElementById("start-button")
+      const scenes = [...document.querySelectorAll(".scene")]
+      const sceneCount = document.getElementById("scene-count")
+      const signalProgress = document.getElementById("signal-progress")
+      const transitionSweep = document.getElementById("transition-sweep")
+      const confetti = document.getElementById("confetti")
+      let current = 0
+      let transitioning = false
+      let cursorTimer
+
+      function buildConfetti() {
+        const colors = ["#0A0A0A", "#F4F1EA", "#FF5C28"]
+        for (let index = 0; index < 24; index += 1) {
+          const piece = document.createElement("span")
+          piece.className = "confetti-piece"
+          piece.style.left = `${(index * 41) % 98}%`
+          piece.style.background = colors[index % colors.length]
+          piece.style.setProperty("--duration", `${3.8 + (index % 5) * 0.45}s`)
+          piece.style.setProperty("--delay", `${-((index % 9) * 0.38)}s`)
+          piece.style.setProperty("--drift", `${(index % 2 ? 1 : -1) * (30 + (index % 6) * 14)}px`)
+          confetti.appendChild(piece)
+        }
+      }
+
+      function renderScene(index) {
+        current = Math.max(0, Math.min(index, scenes.length - 1))
+        scenes.forEach((scene, sceneIndex) => scene.classList.toggle("is-active", sceneIndex === current))
+        sceneCount.textContent = `${String(current + 1).padStart(2, "0")} / ${String(scenes.length).padStart(2, "0")}`
+        signalProgress.style.width = `${((current + 1) / scenes.length) * 100}%`
+        const isDark = scenes[current].classList.contains("dark")
+        document.querySelector(".topbar").style.color = isDark ? "#F4F1EA" : "#0A0A0A"
+        document.querySelector(".topbar").style.borderColor = isDark ? "rgba(244,241,234,.2)" : "rgba(10,10,10,.2)"
+      }
+
+      function moveTo(index) {
+        if (transitioning || index === current || index < 0 || index >= scenes.length) return
+        transitioning = true
+        transitionSweep.classList.remove("is-moving")
+        void transitionSweep.offsetWidth
+        transitionSweep.classList.add("is-moving")
+        window.setTimeout(() => renderScene(index), 245)
+        window.setTimeout(() => {
+          transitionSweep.classList.remove("is-moving")
+          transitioning = false
+        }, 520)
+      }
+
+      function startDemo() {
+        setup.hidden = true
+        renderScene(0)
+        document.documentElement.requestFullscreen?.().catch(() => {})
+      }
+
+      function showCursorTemporarily() {
+        document.body.classList.remove("cursor-hidden")
+        window.clearTimeout(cursorTimer)
+        cursorTimer = window.setTimeout(() => document.body.classList.add("cursor-hidden"), 1500)
+      }
+
+      startButton.addEventListener("click", startDemo)
+      document.getElementById("stage").addEventListener("click", () => moveTo(current + 1))
+      document.addEventListener("mousemove", showCursorTemporarily)
+      document.addEventListener("keydown", (event) => {
+        if (!setup.hidden && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault()
+          startDemo()
+          return
+        }
+        if (event.key === "ArrowRight" || event.key === " ") {
+          event.preventDefault()
+          moveTo(current + 1)
+        }
+        if (event.key === "ArrowLeft") moveTo(current - 1)
+        if (event.key.toLowerCase() === "r") renderScene(0)
+      })
+
+      buildConfetti()
+      renderScene(0)
+    </script>
+  </body>
+</html>
