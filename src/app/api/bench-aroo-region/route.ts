@@ -5,7 +5,8 @@ export const dynamic = "force-dynamic";
 
 const WARMUPS = 3;
 const SAMPLES = 25;
-const ENDPOINT = "https://uizwhuhlqxcfjgfdvblf.supabase.co/auth/v1/health";
+const ENDPOINT = "https://uizwhuhlqxcfjgfdvblf.supabase.co/rest/v1/stories?select=id&limit=1";
+const API_KEY = "sb_publishable_qxmdaylQ_Uw1Vzs_3yMqsw_hjA_59ZI";
 
 function summarize(samples: number[]) {
   const sorted = [...samples].sort((a, b) => a - b);
@@ -22,7 +23,7 @@ function summarize(samples: number[]) {
 
 async function probe(): Promise<number> {
   const started = performance.now();
-  const response = await fetch(ENDPOINT, { cache: "no-store" });
+  const response = await fetch(ENDPOINT, { headers: { apikey: API_KEY }, cache: "no-store" });
   await response.arrayBuffer();
   if (!response.ok) throw new Error(`Supabase returned ${response.status}`);
   return performance.now() - started;
@@ -35,7 +36,7 @@ export async function GET() {
     for (let i = 0; i < SAMPLES; i += 1) samples.push(await probe());
     return NextResponse.json({
       region: process.env.VERCEL_REGION ?? null,
-      target: "aroo-supabase-auth-health",
+      target: "aroo-supabase-rest/stories",
       warmups: WARMUPS,
       sampleCount: SAMPLES,
       statsMs: summarize(samples),
