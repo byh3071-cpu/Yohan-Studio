@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 const WARMUPS = 3;
 const SAMPLES = 25;
-const ENDPOINT = "https://uizwhuhlqxcfjgfdvblf.supabase.co/rest/v1/stories?select=id&limit=1";
+const ENDPOINT = "https://uizwhuhlqxcfjgfdvblf.supabase.co/rest/v1/aroo_stories?select=id&limit=1";
 const API_KEY = "sb_publishable_qxmdaylQ_Uw1Vzs_3yMqsw_hjA_59ZI";
 
 function summarize(samples: number[]) {
@@ -36,7 +36,7 @@ export async function GET() {
     for (let i = 0; i < SAMPLES; i += 1) samples.push(await probe());
     return NextResponse.json({
       region: process.env.VERCEL_REGION ?? null,
-      target: "aroo-supabase-rest/stories",
+      target: "aroo-supabase-rest/aroo_stories",
       warmups: WARMUPS,
       sampleCount: SAMPLES,
       statsMs: summarize(samples),
